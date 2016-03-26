@@ -1,11 +1,10 @@
 var mongoose   = require('mongoose'),
     Schema     = mongoose.Schema;
-    userSchema = require('/user.js').schema;
+    userSchema = require('./user.js').schema;
 
 
 var convoSchema = new Schema({
-  // messages: [],
-  participants: [userSchema],
+  participants_id: [{ type: Number }],
   created_at: { type: Date },
   updated_at: { type: Date }
 });

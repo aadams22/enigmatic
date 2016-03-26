@@ -139,26 +139,9 @@ app.get('/messanger', require('connect-ensure-login').ensureLoggedIn(),
     res.render('messanger.ejs', { user: req.user });
 });
 
-//CONVOS ROUTE
-app.get('/:id', function(req, res){
-  console.log('this is convo id', req.params.id);
-  var id = req.params.id
-  req.findById(id, function(err, convo){
-    res.render('convos.ejs', {
-      user: req.user,
-      convo: convo
-    });
-  });
-});
-
-//FRIENDS ROUTE
-app.get('/friends', function(req, res){
-  console.log('got friends route');
-});
-
 
 //==================================
 //LISTEN
 http.listen(port, function(){
-  console.log('run!')
+  console.log('running beautiful on a beautiful day!')
 });

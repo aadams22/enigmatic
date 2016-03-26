@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema   = mongoose.Schema;
+    Schema   = mongoose.Schema,
+    convoSchema = require('./convo.js').schema;
 
 
 var userSchema = new Schema({
@@ -9,7 +10,8 @@ var userSchema = new Schema({
               displayName: {type: String},
               token: {type: Number}
             },
-    convos: []
+    convos: [convoSchema],
+    friends: [{ type: Number }]
 });
 
 
