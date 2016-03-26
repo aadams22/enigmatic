@@ -5,15 +5,16 @@ var express          = require('express'),
     Strategy         = require('passport-facebook').Strategy,
     // findOrCreate     = require('mongoose-findorcreate'),
     port             = process.env.PORT || 8080;
-    User             = require('./models/user.js')
+    User             = require('./models/user.js'),
+    app              = express();
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
 mongoose.connect(mongoUri);
 
-//PASSPORT
-// //findOrCreate now associated with UserSchema
-// User.plugin(findOrCreate);
+app.use(express.static('public'));
 
+ //==================================
+//PASSPORT
 
 passport.use(new Strategy({
   clientID: process.env.FB_SECRET_KEY,
@@ -68,7 +69,8 @@ passport.deserializeUser(function(id, done) {
 
 //END OF PASSPORT
 
-var app = express();
+ //==================================
+
 
 app.use(morgan('dev'));
 app.use(require('cookie-parser')());
@@ -77,9 +79,8 @@ app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+ //==================================
 //PASSPORT ROUTES
-
 
 app.get('/', function(req,res){
   res.render('index.ejs', { user: req.user});
@@ -99,9 +100,29 @@ app.get('/login/facebook/return',
 
 app.get('/profile', require('connect-ensure-login').ensureLoggedIn(),
   function(req,res){
-    res.render('profile', { user: req.user });
+    res.render('profile.ejs', { user: req.user });
 });
 
-app.listen(port, function(){
+//==================================
+//SOCKETS
+var http = require('http').Server(app),
+    io   = require('socket.io')(http);
+
+
+io.on('connection', function(socket){
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+  });
+});
+
+app.get('/messanger', require('connect-ensure-login').ensureLoggedIn(),
+  function(req,res){
+    res.render('messanger.ejs', { user: req.user });
+});
+
+
+//==================================
+//LISTEN
+http.listen(port, function(){
   console.log('run!')
 });
