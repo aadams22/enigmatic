@@ -8,7 +8,8 @@ var userSchema = new Schema({
               email: {type: String, unique: true},
               displayName: {type: String},
               token: {type: Number}
-              }
+            },
+    convos: []
 });
 
 
