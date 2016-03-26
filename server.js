@@ -19,7 +19,7 @@ app.use(express.static('public'));
 passport.use(new Strategy({
   clientID: process.env.FB_SECRET_KEY,
   clientSecret: process.env.FB_SECRET,
-  callbackURL: 'http://localhost:8080/login/facebook/return'
+  callbackURL: 'http://localhost:8080/login/facebook/return' || 'http://http://enig-matic.herokuapp.com/login/facebook/return'
 },
 function(accessToken, refreshToken, profile, done){
   console.log('this is new Strategy user profile ', profile);
@@ -114,6 +114,7 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
 });
+
 
 app.get('/messanger', require('connect-ensure-login').ensureLoggedIn(),
   function(req,res){
