@@ -3,7 +3,6 @@ var express          = require('express'),
     morgan           = require('morgan'),
     passport         = require('passport'),
     Strategy         = require('passport-facebook').Strategy,
-    // findOrCreate     = require('mongoose-findorcreate'),
     port             = process.env.PORT || 8080;
     User             = require('./models/user.js'),
     app              = express();
@@ -14,8 +13,7 @@ mongoose.connect(mongoUri);
 app.use(express.static('public'));
 
  //==================================
-//PASSPORT
-
+//PASSPORT FACEBOOK OAUTH
 passport.use(new Strategy({
   clientID: process.env.FB_SECRET_KEY,
   clientSecret: process.env.FB_SECRET,
@@ -57,6 +55,7 @@ function(accessToken, refreshToken, profile, done){
 
 }));
 
+//PASSPORT SERIALIZATIONS
 passport.serializeUser(function(user, done) {
     done(null, user.id);
 });
@@ -69,8 +68,7 @@ passport.deserializeUser(function(id, done) {
 
 //END OF PASSPORT
 
- //==================================
-
+//==================================
 
 app.use(morgan('dev'));
 app.use(require('cookie-parser')());
@@ -82,32 +80,52 @@ app.use(passport.session());
  //==================================
 //PASSPORT ROUTES
 
+//INDEX RENDER
 app.get('/', function(req,res){
   res.render('index.ejs', { user: req.user});
 });
 
+//LOGIN RENDER
 app.get('/login', function(req,res){
   res.render('login.ejs');
 });
 
+//FACEBOOK OAUTH
 app.get('/login/facebook', passport.authenticate('facebook'));
 
+//FACEBOOK OAUTH CALLBACK
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login'}),
   function(req,res){
     res.redirect('/');
 });
 
+//PROFILE
 app.get('/profile', require('connect-ensure-login').ensureLoggedIn(),
   function(req,res){
     res.render('profile.ejs', { user: req.user });
 });
 
+//LOGOUT
+app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+});
+
+
+//IS LOGGED IN
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated())
+        return next();
+    res.redirect('/');
+}
+
 //==================================
 //SOCKETS
 var http = require('http').Server(app),
     io   = require('socket.io')(http);
-
+    nsp  = io.of('/my-namespace');
+    // console.log(nsp);
 
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
@@ -115,10 +133,27 @@ io.on('connection', function(socket){
   });
 });
 
-
+//MESSANGER ROUTE
 app.get('/messanger', require('connect-ensure-login').ensureLoggedIn(),
   function(req,res){
     res.render('messanger.ejs', { user: req.user });
+});
+
+//CONVOS ROUTE
+app.get('/:id', function(req, res){
+  console.log('this is convo id', req.params.id);
+  var id = req.params.id
+  req.findById(id, function(err, convo){
+    res.render('convos.ejs', {
+      user: req.user,
+      convo: convo
+    });
+  });
+});
+
+//FRIENDS ROUTE
+app.get('/friends', function(req, res){
+  console.log('got friends route');
 });
 
 
