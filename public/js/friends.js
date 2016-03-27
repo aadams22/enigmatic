@@ -1,6 +1,6 @@
 $(function(){
 
-
+//FINDS USER'S CURRENT FRIENDS
   var minlength = 3;
   $('#getfriends').keyup(function(){
     var value = $(this).val();
@@ -10,7 +10,7 @@ $(function(){
         // $.ajax({
         //     type: 'GET',
         //     url: '/getfriends',
-        //     data: { 'users.userProfile.displayName' : value }
+        //     data: { 'users.friends' : value }
         // }).done(
         // //SUCCESS
         // function(response) {

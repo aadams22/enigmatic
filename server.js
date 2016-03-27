@@ -149,7 +149,7 @@ app.get('/friends', function(req,res){
 });
 
 app.post('/getfriends', function(req,res){
-  console.log('/getfriends accessed')
+  console.log('/getfriends accessed');
 });
 
 

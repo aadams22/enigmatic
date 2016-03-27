@@ -104,13 +104,13 @@ form > input {
 
 form > button {
   width: 9%;
-  background: lightblue;
+  background: #d0dde1;
   border: none;
   padding: 10px;
 }
 
 form > button:hover {
-  background-color: grey;
+  background-color: #666666;
 }
 
 #messages {

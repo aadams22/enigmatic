@@ -5,11 +5,12 @@
 <% if (user) { %>
 
 <div class="convo-container">
-  <input id="getfriends" type="text" name="users" placeholder="add friend">
+  <input id="getfriends" type="text" name="users" placeholder="search friends">
   <ul>
-    <li>friend</li>
-    <li>friend</li>
-    <li>friend</li>
+    <% for (var i=0; i < user.friends.length; i++ ) { %>
+    <li>friend <%= user.friends[i].name %></li>
+    <% } %>
+    <li>Hayleigh</li>
   </ul>
 </div>
 
