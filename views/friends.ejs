@@ -2,17 +2,18 @@
 
 <% include partials/header.ejs %>
 
+<% if (user) { %>
 
 <div class="convo-container">
+  <input id="getfriends" type="text" name="users" placeholder="add friend">
   <ul>
     <li>friend</li>
     <li>friend</li>
     <li>friend</li>
   </ul>
-  <input id="getfriends" type="text" name="users" placeholder="add friend">
 </div>
 
-
+<% } %>
 
 
   </body>
