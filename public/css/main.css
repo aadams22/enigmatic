@@ -3,8 +3,16 @@
   padding: 0;
   box-sizing: border-box;
 }
+html {
+  height: 100%;
+}
 
 body {
+  /*background-image: url('https://wallpaperscraft.com/image/surface_gray_spot_light_texture_50876_1920x1080.jpg');*/
+  /*background-image: url('https://images5.alphacoders.com/430/430918.jpg');*/
+  background-image: url('http://cache4.asset-cache.net/xd/487751689.jpg?v=1&c=IWSAsset&k=2&d=62CA815BFB1CE480D458530A312FCEA586871D979DBBA836C840A9D29B1271C482F0C0365381186A');
+  background-size: cover;
+  background-repeat: no-repeat;
   font: 13px Helvetica, Arial;
   background-color: #E6E6FF;
   font-family: 'Abel', sans-serif;
@@ -74,6 +82,9 @@ a:hover {
   background-color: white;
   margin-left: auto;
   margin-right: auto;
+  -webkit-box-shadow: 2px 2px 68px -3px #666666;
+  -moz-box-shadow: 2px 2px 68px -3px #666666;
+  box-shadow: 2px 2px 68px -3px #666666;
 }
 
 form {
