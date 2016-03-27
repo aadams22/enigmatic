@@ -140,9 +140,16 @@ io.on('connection', function(socket){
 });
 
 //MESSANGER ROUTE
-app.get('/messanger',
-  function(req,res){
+app.get('/messanger', function(req,res){
     res.render('messanger.ejs', { user: req.user });
+});
+
+app.get('/friends', function(req,res){
+  res.render('friends.ejs', { user: req.user });
+});
+
+app.post('/getfriends', function(req,res){
+  console.log('/getfriends accessed')
 });
 
 

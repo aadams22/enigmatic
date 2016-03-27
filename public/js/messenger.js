@@ -2,6 +2,7 @@
 // Sockets functionality
 // ================================================================
 $(function(){
+
   console.log('messanger.js is accessed');
   var socket = io();
   $('form').submit(function(){
@@ -12,5 +13,6 @@ $(function(){
   socket.on('chat message', function(msg){
     $('#messages').append($('<li>').text(msg));
   });
+
 
 }) //<--windowonload
