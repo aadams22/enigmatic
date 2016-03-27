@@ -1,11 +1,16 @@
+
+
 <% if (!user) { %>
-  <a href="/login/facebook">Log In with Facebook</a>
+  <header>
+    <a href="/login/facebook">Log In with Facebook</a>
+  </header>
 <% } else { %>
-
-  <ul>
-    <li>Hello, <%= user.userProfile.displayName %>.</li>
-    <li> View your <a href="/profile">profile</a></li>
-    <li><a href="/">Home</a></li>
-  </ul>
-
+  <header>
+    <h1>Enigmatic</h1>
+    <ul>
+      <li><%= user.userProfile.displayName %></li>
+      <li><a href="/profile">profile</a></li>
+      <li><a href="/">home</a></li>
+    </ul>
+  </header>
 <% } %>
