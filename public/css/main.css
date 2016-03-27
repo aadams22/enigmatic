@@ -13,28 +13,40 @@ body {
 /*HEADER*/
 
 header {
+  position: absolute;
+  z-index: 2;
   border-bottom: 1px solid #666666;
+  height: 40px;
+  width: 30%;
+  overflow: hidden;
+  transition-property: 100%;
+	transition-duration: 1s;
+	transition-timing-function: easeInOutQuart;
 }
 
 header > h1{
-  display: inline-block;
   padding: .5em;
   color: silver;
+  text-align: center;
 }
 
-header > ul {
-  display: inline-block;
+header:hover {
+  background: violet;
+	height: 100%;
+	width: 40%;
+	text-align: center;
 }
 
 header > ul > li {
-  display: inline-block;
   padding: 1.9em;
-  border-right: 1px solid #666666;
 }
 
-header > ul > li:first-child {
-  border-left: 1px solid #666666;
+header > ul > li:hover {
+  background-color: #E6E6FF;
 }
+
+
+
 
 /*====================================*/
 /*LINKS*/
@@ -99,4 +111,50 @@ form > button:hover {
 
 #messages li:nth-child(odd) {
   background: #eee;
+}
+
+/*====================================*/
+/*INDEX PAGE*/
+
+#convo-container {
+  position: absolute;
+  z-index: 1;
+  height: 600px;
+  width: 60%;
+  border: 1px solid black;
+  background-color: white;
+  margin-left: 20%;
+  margin-top: 18%;
+}
+
+#convo-container > ul > li {
+  padding: 1em;
+  list-style: none;
+  border-bottom: 1px solid #666666;
+}
+
+#convo-container > ul > li:hover {
+  background-color: lightyellow;
+}
+
+/*====================================*/
+/*MEDIA QUERY*/
+
+@media (min-width: 500px) {
+  header {
+    width: 35%;
+    border-bottom: none;
+  }
+  header > h1 {
+    border-bottom: none;
+    width: 35%;
+  }
+
+  #convo-container {
+    height: 650px;
+    width: 40%;
+    margin-top: 5%;
+    margin-left: 50%;
+  }
+
 }
