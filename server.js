@@ -80,24 +80,12 @@ app.use(passport.session());
  //==================================
 //PASSPORT ROUTES
 
-//INDEX RENDER
+// var passportController = require('./controllers/passportController.js');
+// app.use('/login', passportController);
+
+
 app.get('/', function(req,res){
-  res.render('index.ejs', { user: req.user});
-});
-
-//LOGIN RENDER
-app.get('/login', function(req,res){
-  res.render('login.ejs');
-});
-
-//FACEBOOK OAUTH
-app.get('/login/facebook', passport.authenticate('facebook'));
-
-//FACEBOOK OAUTH CALLBACK
-app.get('/login/facebook/return',
-  passport.authenticate('facebook', { failureRedirect: '/login'}),
-  function(req,res){
-    res.redirect('/');
+  res.render('index.ejs', { user: req.user });
 });
 
 //PROFILE
@@ -113,12 +101,29 @@ app.get('/logout', function(req, res) {
 });
 
 
+//LOGIN RENDER
+// app.get('/login', function(req,res){
+//   res.render('login.ejs', { user: req.user });
+// });
+
+//FACEBOOK OAUTH
+app.get('/login/facebook', passport.authenticate('facebook'));
+
+//FACEBOOK OAUTH CALLBACK
+app.get('/login/facebook/return',
+  passport.authenticate('facebook', { failureRedirect: '/'}),
+  function(req,res){
+    res.redirect('/');
+});
+
 //IS LOGGED IN
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated())
         return next();
     res.redirect('/');
 }
+
+
 
 //==================================
 //SOCKETS
@@ -127,6 +132,7 @@ var http = require('http').Server(app),
     nsp  = io.of('/my-namespace');
     // console.log(nsp);
 
+
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
@@ -134,7 +140,7 @@ io.on('connection', function(socket){
 });
 
 //MESSANGER ROUTE
-app.get('/messanger', require('connect-ensure-login').ensureLoggedIn(),
+app.get('/messanger',
   function(req,res){
     res.render('messanger.ejs', { user: req.user });
 });

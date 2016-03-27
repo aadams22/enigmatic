@@ -1,9 +1,29 @@
-<% if (!user) { %>
-	<p>Welcome! Please <a href="/login">log in</a>.</p>
-<% } else { %>
-  <ul>
-    <li>Hello, <%= user.userProfile.displayName %>. View your <a href="/profile">profile</a>.</li>
-    <li><a href="/messanger">Messanger</a></li>
-    <li><a href="/messages">Messages</a></li>
-  </ul>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Enigmatic</title>
+    <link rel="stylesheet" href="/css/main.css" media="screen" title="no title" charset="utf-8">
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/js/messenger.js"></script>
+
+    </script>
+  </head>
+  <body>
+
+    <% include partials/header.ejs %>
+
+<% if (user) { %>
+    <div id="convo-container">
+        <ul id="convos">
+          <li><a href="/">Convo</a></li>
+          <li><a href="/">Convo</a></li>
+          <li><a href="/">Convo</a></li>
+          <li><a href="/">Convo</a></li>
+        </ul>
+    </div>
+
 <% } %>
+
+  </body>
+</html>

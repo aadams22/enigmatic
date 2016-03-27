@@ -1,0 +1,11 @@
+<% if (!user) { %>
+  <a href="/login/facebook">Log In with Facebook</a>
+<% } else { %>
+
+  <ul>
+    <li>Hello, <%= user.userProfile.displayName %>.</li>
+    <li> View your <a href="/profile">profile</a></li>
+    <li><a href="/">Home</a></li>
+  </ul>
+
+<% } %>
