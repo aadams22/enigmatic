@@ -129,7 +129,7 @@ function isLoggedIn(req, res, next) {
 //SOCKETS
 var http = require('http').Server(app),
     io   = require('socket.io')(http);
-    nsp  = io.of('/my-namespace');
+    // nsp  = io.of('/my-namespace');
     // console.log(nsp);
 
 
