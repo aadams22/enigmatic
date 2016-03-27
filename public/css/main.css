@@ -54,7 +54,7 @@ header > ul > li {
 }
 
 header > ul > li:hover {
-  background-color: #E6E6FF;
+  background-color: #d0dde1;
 }
 
 
@@ -153,6 +153,17 @@ form > button:hover {
 
 .convo-container > ul > li:hover {
   background-color: darkgrey;
+}
+
+#getfriends {
+  width: 100%;
+  padding: 1em;
+  background-color: #F8F7F7;
+  font-color: silver;
+}
+
+#getfriends:hover {
+  background-color: #d0dde1;
 }
 
 /*====================================*/
