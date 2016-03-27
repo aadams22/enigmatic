@@ -1,7 +1,21 @@
-<p>
-ID: <%= user.id %><br/>
-Name: <%= user.userProfile.displayName %><br/>
-<% if (user.emails) { %>
-Email: <%= user.emails[0].value %><br/>
-<% } %>
-</p>
+  <% include partials/head.ejs %>
+
+  <% include partials/header.ejs %>
+
+<div class="convo-container ">
+  <ul>
+    <li>ID: <%= user.id %></li>
+    <li>Name: <%= user.userProfile.displayName %></li>
+
+    <% if (user.userProfile.emails) { %>
+    <li>Email: <%= user.emails[0].value %></li>
+    <% } %>
+  </ul>
+
+</div>
+
+
+
+
+  </body>
+</html>

@@ -120,7 +120,7 @@ form > button:hover {
 /*====================================*/
 /*INDEX PAGE*/
 
-#convo-container {
+.convo-container {
   position: absolute;
   z-index: 1;
   height: 600px;
@@ -134,13 +134,13 @@ form > button:hover {
   box-shadow: 2px 2px 68px -3px #666666;
 }
 
-#convo-container > ul > li {
+.convo-container > ul > li {
   padding: 1em;
   list-style: none;
   border-bottom: 1px solid #666666;
 }
 
-#convo-container > ul > li:hover {
+.convo-container > ul > li:hover {
   background-color: darkgrey;
 }
 
@@ -157,7 +157,7 @@ form > button:hover {
     width: 35%;
   }
 
-  #convo-container {
+  .convo-container {
     height: 650px;
     width: 40%;
     margin-top: 5%;
