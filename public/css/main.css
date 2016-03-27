@@ -79,7 +79,7 @@ a:hover {
   height: 600px;
   width: 55%;
   border: 1px solid black;
-  background-color: white;
+  background-color: #F8F7F7;
   margin-left: auto;
   margin-right: auto;
   -webkit-box-shadow: 2px 2px 68px -3px #666666;
@@ -137,7 +137,7 @@ form > button:hover {
   height: 600px;
   width: 60%;
   border: 1px solid black;
-  background-color: white;
+  background-color: #F8F7F7;
   margin-left: 20%;
   margin-top: 18%;
   -webkit-box-shadow: 2px 2px 68px -3px #666666;
