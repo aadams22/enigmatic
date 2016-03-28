@@ -18,12 +18,18 @@ passport.use(new Strategy({
   clientID: process.env.FB_SECRET_KEY,
   clientSecret: process.env.FB_SECRET,
   callbackURL: 'http://localhost:8080/login/facebook/return' || 'http://http://enig-matic.herokuapp.com/login/facebook/return',
-  profileFields: ['email', 'user_friends'],
-   passReqToCallback: true
+  profileFields: ['id', 'displayName', 'email', 'friends']
 },
 function(accessToken, refreshToken, profile, done){
-  console.log('this is new Strategy user profile ', profile);
-  console.log(typeof profile.user_friends._json)
+  console.log('this is new Strategy user profile: ', profile);
+  console.log('this is the access token: ', accessToken);
+  console.log('this is the refresh token: ', refreshToken);
+  console.log('this is your friend count: ', profile._json.friends.summary.total_count);
+  console.log('these are your friends: ', profile._json.friends.data);
+  var theAccessToken = accessToken;
+  var theRefreshToken = refreshToken;
+  // console.log('this is the friends data: ', profile.friends.data);
+  // console.log('this is the friends data TYPE: ', typeof  profile.friends.data);
 
   User.findOne({ '_id' : profile.id }, function(err, user) {
     console.log('this is find or create user ', user);
@@ -37,11 +43,19 @@ function(accessToken, refreshToken, profile, done){
       console.log('making new person, no one found');
       var newUser = new User();
 
-      newUser._id = profile.id;
-      // newUser.userProfile.token = profile.token;
-      newUser.userProfile.displayName = profile.displayName;
-      newUser.userProfile.email = profile.emails.length>0? profile.emails[0].value : done('email not found');
-      newUser.user_friends = profile.user_friends;
+      newUser._id                        = profile.id;
+      newUser.userProfile.displayName    = profile.displayName;
+      newUser.userProfile.email          = profile.emails[0].value;
+      // newUser.friends.name               = profile.friends.data.name;
+      // newUser.friends.id                 = profile.friends.data.id;
+      newUser.friends.totalFriends       = profile._json.friends.summary.total_count;
+      newUser.provider                   = 'facebook';
+      newUser.providerData.accessToken   = theAccessToken;
+      newUser.providerData.resfreshToken = theRefreshToken;
+      // newUser.totalFriends = profile.friends.total_count;
+
+
+
 
       newUser.save(function(err){
         if (err) {
@@ -110,7 +124,9 @@ app.get('/logout', function(req, res) {
 // });
 
 //FACEBOOK OAUTH
-app.get('/login/facebook', passport.authenticate('facebook',  {scope: ['user_friends', 'email']}));
+app.get('/login/facebook',
+  passport.authenticate('facebook',  { scope: ['user_friends', 'email'] })
+);
 
 //FACEBOOK OAUTH CALLBACK
 app.get('/login/facebook/return',

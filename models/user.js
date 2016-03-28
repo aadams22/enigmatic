@@ -4,17 +4,22 @@ var mongoose = require('mongoose'),
 
 
 var userSchema = new Schema({
-    _id: {type: Number, unique: true},
+    _id: { type: Number, unique: true },
     userProfile: {
-                  email: {type: String, unique: true},
-                  displayName: {type: String},
-                  token: {type: Number}
+                  email: { type: String, unique: true },
+                  displayName: { type: String },
+                  token: { type: Number }
                   },
     convos: [convoSchema],
-    user_friends: {
+    totalFriends: { type: Number },
+    providerData: {
+                  accessToken:  { type: Number } ,
+                  refreshToken: { type: Number }
+                  },
+    friends: [{
                   name: String,
                   id: Number
-                  }
+                }]
 });
 
 
