@@ -25,7 +25,7 @@ function(accessToken, refreshToken, profile, done){
   console.log('this is the access token: ', accessToken);
   console.log('this is the refresh token: ', refreshToken);
   console.log('this is your friend count: ', profile._json.friends.summary.total_count);
-  console.log('these are your friends: ', profile._json.friends.data);
+  // console.log('these are your friends: ', profile._json.friends.data);
   var theAccessToken = accessToken;
   var theRefreshToken = refreshToken;
   // console.log('this is the friends data: ', profile.friends.data);
@@ -46,26 +46,27 @@ function(accessToken, refreshToken, profile, done){
       newUser._id                        = profile.id;
       newUser.userProfile.displayName    = profile.displayName;
       newUser.userProfile.email          = profile.emails[0].value;
-      // newUser.friends.name               = profile.friends.data.name;
-      // newUser.friends.id                 = profile.friends.data.id;
-      newUser.friends.totalFriends       = profile._json.friends.summary.total_count;
+      // newUser.friends.name               = profile._json.friends.data.name;
+      // newUser.friends.id                 = profile._json.friends.data.id;
+      newUser.friends                    = profile._json.friends.data;
+      newUser.totalFriends               = profile._json.friends.summary.total_count;
       newUser.provider                   = 'facebook';
       newUser.providerData.accessToken   = theAccessToken;
       newUser.providerData.resfreshToken = theRefreshToken;
       // newUser.totalFriends = profile.friends.total_count;
 
 
-
-
       newUser.save(function(err){
+        console.log("THIS USER IS NEW: " + newUser)
         if (err) {
           throw err;
           return done(null, newUser);
-        }
-      }) //<--newUser.save
+        }else {
+            console.log("NEW USER SAVED");
+            return done(err,user);
+          }
+      }); //<--newUser.save
 
-    }else {
-      return done(err,user);
     }
 
   })
@@ -130,7 +131,7 @@ app.get('/login/facebook',
 
 //FACEBOOK OAUTH CALLBACK
 app.get('/login/facebook/return',
-  passport.authenticate('facebook', { failureRedirect: '/'}),
+  passport.authenticate('facebook', { failureRedirect: '/' }),
   function(req,res){
     res.redirect('/');
 });

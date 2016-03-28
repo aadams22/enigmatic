@@ -7,19 +7,15 @@ var userSchema = new Schema({
     _id: { type: Number, unique: true },
     userProfile: {
                   email: { type: String, unique: true },
-                  displayName: { type: String },
-                  token: { type: Number }
+                  displayName: { type: String }
                   },
     convos: [convoSchema],
     totalFriends: { type: Number },
     providerData: {
-                  accessToken:  { type: Number } ,
-                  refreshToken: { type: Number }
+                  accessToken:  { type: String } ,
+                  refreshToken: { type: String }
                   },
-    friends: [{
-                  name: String,
-                  id: Number
-                }]
+    friends: []
 });
 
 
