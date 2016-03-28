@@ -17,14 +17,17 @@ app.use(express.static('public'));
 passport.use(new Strategy({
   clientID: process.env.FB_SECRET_KEY,
   clientSecret: process.env.FB_SECRET,
-  callbackURL: 'http://localhost:8080/login/facebook/return' || 'http://http://enig-matic.herokuapp.com/login/facebook/return'
+  callbackURL: 'http://localhost:8080/login/facebook/return' || 'http://http://enig-matic.herokuapp.com/login/facebook/return',
+  profileFields: ['email', 'user_friends'],
+   passReqToCallback: true
 },
 function(accessToken, refreshToken, profile, done){
   console.log('this is new Strategy user profile ', profile);
-  // return done(null, profile);
+  console.log(typeof profile.user_friends._json)
 
   User.findOne({ '_id' : profile.id }, function(err, user) {
     console.log('this is find or create user ', user);
+
 
     if (err) {
       console.log("things broke")
@@ -37,14 +40,14 @@ function(accessToken, refreshToken, profile, done){
       newUser._id = profile.id;
       // newUser.userProfile.token = profile.token;
       newUser.userProfile.displayName = profile.displayName;
-      // newUser.userProfile.email = profile.emails[0].value;
+      newUser.userProfile.email = profile.emails.length>0? profile.emails[0].value : done('email not found');
+      newUser.user_friends = profile.user_friends;
 
       newUser.save(function(err){
         if (err) {
           throw err;
           return done(null, newUser);
         }
-
       }) //<--newUser.save
 
     }else {
@@ -107,7 +110,7 @@ app.get('/logout', function(req, res) {
 // });
 
 //FACEBOOK OAUTH
-app.get('/login/facebook', passport.authenticate('facebook'));
+app.get('/login/facebook', passport.authenticate('facebook',  {scope: ['user_friends', 'email']}));
 
 //FACEBOOK OAUTH CALLBACK
 app.get('/login/facebook/return',
@@ -151,6 +154,7 @@ app.get('/friends', function(req,res){
 app.post('/getfriends', function(req,res){
   console.log('/getfriends accessed');
 });
+
 
 
 //==================================
