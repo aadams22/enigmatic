@@ -7,7 +7,7 @@
 <div class="convo-container">
   <input id="getfriends" type="text" name="users" placeholder="search friends">
   <ul>
-    <li><%=user.totalFriends%></li>
+    <li>You have <%=user.totalFriends%> friends</li>
     <% for (var i=0; i < user.friends.length; i++ ) { %>
     <li>friend <%= user.friends[i].name %></li>
     <% } %>

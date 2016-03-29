@@ -77,7 +77,6 @@ function(accessToken, refreshToken, profile, done){
 
 //PASSPORT SERIALIZATIONS
 passport.serializeUser(function(user, done) {
-  console.log('THE USER IS SERIALIZED!! ', user);
     done(null, user.id);
 });
 
@@ -99,10 +98,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
  //==================================
-//PASSPORT ROUTES
+//ROUTES
 
 // var passportController = require('./controllers/passportController.js');
-// app.use('/login', passportController);
+// app.use('/', passportController);
 
 
 app.get('/', function(req,res){
@@ -116,6 +115,31 @@ app.get('/profile', require('connect-ensure-login').ensureLoggedIn(),
     res.render('profile.ejs', { user: req.user });
 });
 
+//MESSANGER ROUTE
+app.get('/messanger', function(req, res){
+    res.render('messanger.ejs', { user: req.user });
+});
+
+//FRIENDS ROUTE
+app.get('/friends', function(req, res){
+  res.render('friends.ejs', { user: req.user });
+});
+
+app.get('/json', function(req, res){
+  console.log(req.user.id);
+  User.findById(req.user.id, function(err, data){
+    res.send(data);
+  });
+});
+
+// //GETFRIENDS ROUTE for finding your friends
+// app.post('/getfriends', function(req, res){
+//   console.log("============== getfriends accessed ==============", res);
+//   // User.findOne({ 'name':  res }, function(err, user){
+//   //   console.log(user);
+//   // });
+// });
+
 //LOGOUT
 app.get('/logout', function(req, res) {
     req.logout();
@@ -123,10 +147,7 @@ app.get('/logout', function(req, res) {
 });
 
 
-//LOGIN RENDER
-// app.get('/login', function(req,res){
-//   res.render('login.ejs', { user: req.user });
-// });
+
 
 //FACEBOOK OAUTH
 app.get('/login/facebook',
@@ -153,28 +174,12 @@ function isLoggedIn(req, res, next) {
 //SOCKETS
 var http = require('http').Server(app),
     io   = require('socket.io')(http);
-    // nsp  = io.of('/my-namespace');
-    // console.log(nsp);
 
 
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
-});
 
-//MESSANGER ROUTE
-app.get('/messanger', function(req,res){
-    res.render('messanger.ejs', { user: req.user });
-});
 
-app.get('/friends', function(req,res){
-  res.render('friends.ejs', { user: req.user });
-});
 
-app.post('/getfriends', function(req,res){
-  console.log('/getfriends accessed');
-});
+
 
 
 
