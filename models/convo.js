@@ -1,10 +1,11 @@
 var mongoose   = require('mongoose'),
-    Schema     = mongoose.Schema;
+    Schema     = mongoose.Schema,
     userSchema = require('./user.js').schema;
 
 
 var convoSchema = new Schema({
   participants_id: [{ type: Number }],
+  socketId: { type: String },
   created_at: { type: Date },
   updated_at: { type: Date }
 });

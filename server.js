@@ -175,6 +175,31 @@ function isLoggedIn(req, res, next) {
 var http = require('http').Server(app),
     io   = require('socket.io')(http);
 
+var clients = [];
+
+io.on('connection', function(socket) {
+
+  console.log('Socket connected: ', socket.id);
+  clients.push(socket.id);
+  console.log('All clients: ', clients);
+
+  io.emit('allClients', clients);
+
+  socket.on('socket-id', function(socketId, msg) {
+    console.log(socketId);
+    io.to(socketId).emit('Private', 'You are the chosen one');
+  });
+
+  socket.on('disconnect', function() {
+    var index = clients.indexOf(socket.id);
+    if (index != -1) {
+      clients.splice(index, 1);
+      console.info('Client disconnected: ', + socket.id);
+      console.log('All clients: ', clients);
+    }
+  })
+
+});
 
 
 

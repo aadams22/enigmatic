@@ -21,17 +21,18 @@ $(function(){
             for (var i = 0; i < response.friends.length; i++) {
               console.log(response.friends[i]);
               $('ul').append('<li>' + response.friends[i].name + '</li>');
-            }.one('click', function(){
-              console.log('clicked one');
-              //!!need to grab value of the clicked item
-              //click creates chat or finds past chat
-              findChatOrCreateNew(friend);
-
-              for (var i = 0; i < response.convo.length; i++) {
-                console.log('this is convo response: ', response.convo[i])
-              }
-
-            });
+            }
+            // .one('click', function(){
+            //   console.log('clicked one');
+            //   //!!need to grab value of the clicked item
+            //   //click creates chat or finds past chat
+            //   findChatOrCreateNew(friend);
+            //
+            //   for (var i = 0; i < response.convo.length; i++) {
+            //     console.log('this is convo response: ', response.convo[i])
+            //   }
+            //
+            // });
 
           } //<-- if statement.
 
