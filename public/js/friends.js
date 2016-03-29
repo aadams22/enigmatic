@@ -1,3 +1,5 @@
+var socket = io();
+
 $(function(){
 
 //FINDS USER'S CURRENT FRIENDS
@@ -9,7 +11,7 @@ $(function(){
       if (searchString.length >= minlength ) {
           console.log("getting searchString",  searchString);
         $.ajax({
-            type: 'GET',
+            method: 'GET',
             url: '/json',
             data: { 'friends.name' : searchString }
         }).done(
@@ -20,25 +22,14 @@ $(function(){
           if( response.friends.length != 0 ) {
             for (var i = 0; i < response.friends.length; i++) {
               console.log(response.friends[i]);
-              $('ul').append('<li>' + response.friends[i].name + '</li>');
+              $('ul').append("<li id=" + response.friends[i].id + ">" + response.friends[i].name + "</li>");
             }
-            // .one('click', function(){
-            //   console.log('clicked one');
-            //   //!!need to grab value of the clicked item
-            //   //click creates chat or finds past chat
-            //   findChatOrCreateNew(friend);
-            //
-            //   for (var i = 0; i < response.convo.length; i++) {
-            //     console.log('this is convo response: ', response.convo[i])
-            //   }
-            //
-            // });
 
           } //<-- if statement.
 
 
           //==========================================
-          //ONLY WORKS FOR SUBMIT, IT APPENDS DURRING KEYUP
+          //APPENDS WITH EVERY KEYUP WHEN FRIENDS.LENGTH == 0
           // if( response.friends.length == 0 ){
           //   console.log('you have no friends');
           //
@@ -58,13 +49,47 @@ $(function(){
 
   });
 
+  //FINDS OR CREATES NEW USER CONVO
+  $('li').click(function(e) {
+    console.log(e);
+    console.log($(this).prop('id'));
+    $friendId = $(this).prop('id');
+
+    $.ajax {
+      method: GET,
+      url: '/json',
+      data: { 'id' : $friendId }
+    }.done(
+      //success
+      function(response){
+        console.log(response);
+        console.log(response.id);
+        console.log(response.convo);
+        findOrCreateUserConvo(response);
+      },
+      //error
+      function(err){
+        console.log(err);
+      });
 
 
-// function findChatOrCreateNew(friend) {
-//   console.log('findChatOrCreateNew has been accessed: ', friend);
-//
-//
-// } //<--findChatOrCreateNew
+  });
+
+function findOrCreateUserConvo(response) {
+  console.log(response);
+
+  for (var i = 0; i < response.convo.length; i++) {
+    if (response.convo[i].id == response.convo[i].id + $friendId.parsInt() || $friendId.parsInt() + response.convo[i].id) {
+        console.log("freinds convo match!");
+    }else {
+      $.ajax {
+        method: POST,
+        url: '/createNewConvo',
+        data: { data : response }
+      }
+    }
+
+} //<--findOrCreateUserConvo
 
 
 

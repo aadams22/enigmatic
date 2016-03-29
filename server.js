@@ -133,12 +133,15 @@ app.get('/json', function(req, res){
 });
 
 // //GETFRIENDS ROUTE for finding your friends
-// app.post('/getfriends', function(req, res){
-//   console.log("============== getfriends accessed ==============", res);
-//   // User.findOne({ 'name':  res }, function(err, user){
-//   //   console.log(user);
-//   // });
-// });
+app.post('/createNewConvo', function(req, res){
+  console.log("============== createorfind accessed ==============", res);
+  var newConvo = Convo();
+
+    newConvo.save(function(err){
+      console.log('saving error: ', err);
+    });
+
+});
 
 //LOGOUT
 app.get('/logout', function(req, res) {

@@ -10,6 +10,7 @@ socket.on('allClients', function(allClients) {
 
   $(allClients).each(function(index, value) {
     $convos.append('<li id='+ value + '>' + value + '</li>');
+
     $('li').click(function() {
       console.log($(this).prop('id'));
       socket.emit('socket-id', $(this).prop('id'));

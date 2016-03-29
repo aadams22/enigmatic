@@ -4,6 +4,7 @@ var mongoose   = require('mongoose'),
 
 
 var convoSchema = new Schema({
+  id: { type: Number },
   participants_id: [{ type: Number }],
   socketId: { type: String },
   created_at: { type: Date },
