@@ -27,6 +27,10 @@ $(function(){
               //click creates chat or finds past chat
               findChatOrCreateNew(friend);
 
+              for (var i = 0; i < response.convo.length; i++) {
+                console.log('this is convo response: ', response.convo[i])
+              }
+
             });
 
           } //<-- if statement.
@@ -55,10 +59,11 @@ $(function(){
 
 
 
-function findChatOrCreateNew(friend) {
-  console.log('findChatOrCreateNew has been accessed: ', )
-
-} //<--findChatOrCreateNew
+// function findChatOrCreateNew(friend) {
+//   console.log('findChatOrCreateNew has been accessed: ', friend);
+//
+//
+// } //<--findChatOrCreateNew
 
 
 
