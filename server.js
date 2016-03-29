@@ -18,18 +18,17 @@ passport.use(new Strategy({
   clientID: process.env.FB_SECRET_KEY,
   clientSecret: process.env.FB_SECRET,
   callbackURL: 'http://localhost:8080/login/facebook/return' || 'http://http://enig-matic.herokuapp.com/login/facebook/return',
-  profileFields: ['id', 'displayName', 'email', 'friends']
+  profileFields: ['id', 'displayName', 'email', 'friends'],
+  enableProof: true
 },
 function(accessToken, refreshToken, profile, done){
   console.log('this is new Strategy user profile: ', profile);
   console.log('this is the access token: ', accessToken);
   console.log('this is the refresh token: ', refreshToken);
-  console.log('this is your friend count: ', profile._json.friends.summary.total_count);
   // console.log('these are your friends: ', profile._json.friends.data);
   var theAccessToken = accessToken;
   var theRefreshToken = refreshToken;
-  // console.log('this is the friends data: ', profile.friends.data);
-  // console.log('this is the friends data TYPE: ', typeof  profile.friends.data);
+
 
   User.findOne({ '_id' : profile.id }, function(err, user) {
     console.log('this is find or create user ', user);
@@ -53,7 +52,6 @@ function(accessToken, refreshToken, profile, done){
       newUser.provider                   = 'facebook';
       newUser.providerData.accessToken   = theAccessToken;
       newUser.providerData.resfreshToken = theRefreshToken;
-      // newUser.totalFriends = profile.friends.total_count;
 
 
       newUser.save(function(err){
@@ -67,14 +65,19 @@ function(accessToken, refreshToken, profile, done){
           }
       }); //<--newUser.save
 
+
+
+    }else {
+        return done(err,user);
     }
 
-  })
+  }); //<---user findOne
 
 }));
 
 //PASSPORT SERIALIZATIONS
 passport.serializeUser(function(user, done) {
+  console.log('THE USER IS SERIALIZED!! ', user);
     done(null, user.id);
 });
 
@@ -103,6 +106,7 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
+  // isLoggedIn();
   res.render('index.ejs', { user: req.user });
 });
 
