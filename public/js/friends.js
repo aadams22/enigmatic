@@ -84,7 +84,7 @@ function findOrCreateUserConvo(response) {
 
   if(response.convo != null) {
     for (var i = 0; i < response.convo.length; i++) {
-      if (response.convo[i].id == response.convo[i].id + $friendId.parsInt() || $friendId.parsInt() + response.convo[i].id) {
+      if (response.convo[i].id == response._id + $friendId.parsInt() || $friendId.parsInt() + response._id) {
           console.log("freinds convo match!");
       }
     }
