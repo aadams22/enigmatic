@@ -93,6 +93,38 @@ app.use(passport.session());
 
 
 
+//==================================
+//SOCKETS
+var http = require('http').Server(app),
+    io   = require('socket.io')(http);
+
+var clients = [];
+//
+// io.on('connection', function(socket) {
+//
+//   // console.log('Socket connected: ', socket.id);
+//   clients.push(socket.id);
+//   // console.log('All clients: ', clients);
+//
+//   io.emit('allClients', clients);
+//
+//   // socket.on('socket-id', function(socketId, msg){
+//   //   console.log('THIS IS CONNECTED: ', socketId);
+//   //   io.to(socketId).emit('Private', 'You are the chosen one');
+//   // });
+//
+//
+//   socket.on('disconnect', function() {
+//     var index = clients.indexOf(socket.id);
+//     if (index != -1) {
+//       clients.splice(index, 1);
+//       console.info('Client disconnected: ', + socket.id);
+//       // console.log('All clients: ', clients);
+//     }
+//   })
+//
+// });
+
 
 
  //==================================
@@ -143,17 +175,30 @@ app.use(passport.session());
 
  // //GETFRIENDS ROUTE for finding your friends
  app.post('/createNewConvo', function(req, res){
-   console.log("============== createorfind accessed ==============", res);
-
+   console.log("============== createorfind accessed ==============");
+   console.log('name: ', req.body.name);
+   console.log('my name: ', req.user.userProfile.displayName);
+   var combined = parseInt(req.user.id + req.body.id);
    var newConvo = Convo();
 
-     // newConvo.id = res.fullId;
 
+    io.on('connection', function(socket) {
+      console.log('Socket connected: ', socket.id);
+      clients.push(socket.id);
+      socket.on('socket-id', function(socketId, msg){
+        console.log('THIS IS CONNECTED: ', socketId);
+        io.to(socketId).emit('Private', 'You are the chosen one');
+      });
+    });
 
-     // newConvo.save(function(err){
-     //   console.log('saving error: ', err);
-     //   res.redirect('/messanger')
-     // });
+    newConvo.id = combined;
+    newConvo.participants.push(req.body.name, req.user.userProfile.displayName);
+    newConvo.socketId(socket.id);
+
+     newConvo.save(function(err){
+       console.log('saving error: ', err);
+       res.redirect('/messanger')
+     });
 
  });
 
@@ -182,42 +227,6 @@ app.use(passport.session());
          return next();
      res.redirect('/');
  }
-
-
-
-//==================================
-//SOCKETS
-var http = require('http').Server(app),
-    io   = require('socket.io')(http);
-
-var clients = [];
-
-io.on('connection', function(socket) {
-
-  // console.log('Socket connected: ', socket.id);
-  clients.push(socket.id);
-  // console.log('All clients: ', clients);
-
-  io.emit('allClients', clients);
-
-  socket.on('socket-id', function(socketId, msg) {
-    // console.log(socketId);
-    io.to(socketId).emit('Private', 'You are the chosen one');
-  });
-
-  socket.on('disconnect', function() {
-    var index = clients.indexOf(socket.id);
-    if (index != -1) {
-      clients.splice(index, 1);
-      console.info('Client disconnected: ', + socket.id);
-      // console.log('All clients: ', clients);
-    }
-  })
-
-});
-
-
-
 
 
 

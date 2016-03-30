@@ -47,7 +47,6 @@ var minlength = 3;
           if( response.friends.length == 0 ){
             console.log('you have no friends');
             $('.searching').html("No match found. Make more friends");
-            // $('ul').append('<li>No match found. Make more friends</li>');
             return false;
           }
 
@@ -64,8 +63,7 @@ var minlength = 3;
 
   //FINDS OR CREATES NEW USER CONVO
   $('li').click(function(e) {
-    console.log(this);
-    console.log($(this).prop('id'));
+    // console.log($(this).prop('id'));
     $friendId = $(this).prop('id');
 
     $.ajax({
@@ -87,8 +85,8 @@ var minlength = 3;
 
 //findOrCreateUserConvo
 function findOrCreateUserConvo(response) {
-  console.log('THIS IS THE RESPONSE', response);
-  console.log(response.friends[0]);
+  // console.log('THIS IS THE RESPONSE', response);
+  // console.log(response.friends[0]);
 
   if(response.convo != null) {
     for (var i = 0; i < response.convo.length; i++) {
