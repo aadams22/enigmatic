@@ -10,7 +10,7 @@ var minlength = 3;
     var searchString = $(this).val();
 
       //appends empty li to fill with search results
-      if (searchString.length < 2) {
+      if (searchString.length === 1) {
         $('#my-friends').append('<li class="searching"></li>');
       };
 
@@ -33,7 +33,7 @@ var minlength = 3;
               $('.searching').attr('id', response.friends[i].id);
             }
 
-          } //<-- if statement.
+          } //<-- if statement
 
 
           //WHEN FRIENDS.LENGTH == 0 ADDS A MESSAGE
@@ -57,20 +57,16 @@ var minlength = 3;
 
   //FINDS OR CREATES NEW USER CONVO
   $('li').click(function(e) {
-    console.log(e);
+    console.log(this);
     console.log($(this).prop('id'));
     $friendId = $(this).prop('id');
 
-    $.ajax ({
-      method: GET,
+    $.ajax({
+      method: 'GET',
       url: '/json',
-      data: { 'id' : $friendId }
     }).done(
       //success
       function(response){
-        console.log(response);
-        console.log(response.id);
-        console.log(response.convo);
         findOrCreateUserConvo(response);
       },
       //error
@@ -84,20 +80,24 @@ var minlength = 3;
 
 //findOrCreateUserConvo
 function findOrCreateUserConvo(response) {
-  console.log(response);
+  console.log('THIS IS THE RESPONSE', response);
 
-  for (var i = 0; i < response.convo.length; i++) {
-    if (response.convo[i].id == response.convo[i].id + $friendId.parsInt() || $friendId.parsInt() + response.convo[i].id) {
-        console.log("freinds convo match!");
-    }else {
-      $.ajax ({
-        method: POST,
-        url: '/createNewConvo',
-        data: { data : response }
-      });
+  if(response.convo != null) {
+    for (var i = 0; i < response.convo.length; i++) {
+      if (response.convo[i].id == response.convo[i].id + $friendId.parsInt() || $friendId.parsInt() + response.convo[i].id) {
+          console.log("freinds convo match!");
+      }
     }
+  }else {
+    $.ajax ({
+      method: POST,
+      url: '/createNewConvo',
+      data: { data : response }
+    });
   }
-} //<--findOrCreateUserConvo
+
+
+}; //<--findOrCreateUserConvo
 
 
 

@@ -139,14 +139,15 @@ app.get('/json', function(req, res){
 // //GETFRIENDS ROUTE for finding your friends
 app.post('/createNewConvo', function(req, res){
   console.log("============== createorfind accessed ==============", res);
+
   var newConvo = Convo();
 
-    newConvo.id = res.fullId;
+    // newConvo.id = res.fullId;
 
 
-    newConvo.save(function(err){
-      console.log('saving error: ', err);
-    });
+    // newConvo.save(function(err){
+    //   console.log('saving error: ', err);
+    // });
 
 });
 
@@ -189,14 +190,14 @@ var clients = [];
 
 io.on('connection', function(socket) {
 
-  console.log('Socket connected: ', socket.id);
+  // console.log('Socket connected: ', socket.id);
   clients.push(socket.id);
-  console.log('All clients: ', clients);
+  // console.log('All clients: ', clients);
 
   io.emit('allClients', clients);
 
   socket.on('socket-id', function(socketId, msg) {
-    console.log(socketId);
+    // console.log(socketId);
     io.to(socketId).emit('Private', 'You are the chosen one');
   });
 
@@ -205,7 +206,7 @@ io.on('connection', function(socket) {
     if (index != -1) {
       clients.splice(index, 1);
       console.info('Client disconnected: ', + socket.id);
-      console.log('All clients: ', clients);
+      // console.log('All clients: ', clients);
     }
   })
 
