@@ -5,6 +5,7 @@ var express          = require('express'),
     Strategy         = require('passport-facebook').Strategy,
     port             = process.env.PORT || 8080;
     User             = require('./models/user.js'),
+    Convo            = require('./models/convo.js'),
     app              = express();
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
@@ -151,6 +152,7 @@ app.use(passport.session());
 
      // newConvo.save(function(err){
      //   console.log('saving error: ', err);
+     //   res.redirect('/messanger')
      // });
 
  });

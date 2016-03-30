@@ -88,6 +88,7 @@ var minlength = 3;
 //findOrCreateUserConvo
 function findOrCreateUserConvo(response) {
   console.log('THIS IS THE RESPONSE', response);
+  console.log(response.friends[0]);
 
   if(response.convo != null) {
     for (var i = 0; i < response.convo.length; i++) {
@@ -97,9 +98,9 @@ function findOrCreateUserConvo(response) {
     }
   }else {
     $.ajax ({
-      method: POST,
+      method: 'POST',
       url: '/createNewConvo',
-      data: { data : response }
+      data: response.friends[0]
     });
   }
 
