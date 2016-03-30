@@ -10,12 +10,79 @@ var express          = require('express'),
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
 mongoose.connect(mongoUri);
 
-app.use(express.static('public'));
 
-require('./config/passport.js')(app,passport,Strategy)
+// require('./config/routes.js')(app,mongoose,passport,User)
+// require('./config/passport.js')(app,passport,Strategy)
+//==================================
+passport.use(new Strategy({
+ clientID: process.env.FB_SECRET_KEY,
+ clientSecret: process.env.FB_SECRET,
+ callbackURL: 'http://localhost:8080/login/facebook/return' || 'http://http://enig-matic.herokuapp.com/login/facebook/return',
+ profileFields: ['id', 'displayName', 'email', 'friends'],
+ enableProof: true
+},
+function(accessToken, refreshToken, profile, done){
+ console.log('this is new Strategy user profile: ', profile);
+ console.log('this is the access token: ', accessToken);
+ console.log('this is the refresh token: ', refreshToken);
+ // console.log('these are your friends: ', profile._json.friends.data);
+ var theAccessToken = accessToken;
+ var theRefreshToken = refreshToken;
+
+
+ User.findOne({ '_id' : profile.id }, function(err, user) {
+   console.log('this is find or create user ', user);
+
+
+   if (err) {
+     console.log("things broke")
+     return done(err)
+   }
+   if (!user) {
+     console.log('making new person, no one found');
+     var newUser = new User();
+
+     newUser._id                        = profile.id;
+     newUser.userProfile.displayName    = profile.displayName;
+     newUser.userProfile.email          = profile.emails[0].value;
+     // newUser.friends.name               = profile._json.friends.data.name;
+     // newUser.friends.id                 = profile._json.friends.data.id;
+     newUser.friends                    = profile._json.friends.data;
+     newUser.totalFriends               = profile._json.friends.summary.total_count;
+     newUser.provider                   = 'facebook';
+     newUser.providerData.accessToken   = theAccessToken;
+     newUser.providerData.resfreshToken = theRefreshToken;
+
+
+     newUser.save(function(err){
+       console.log("THIS USER IS NEW: " + newUser)
+       if (err) {
+         throw err;
+         return done(null, newUser);
+       }else {
+           console.log("NEW USER SAVED");
+           return done(err,user);
+         }
+     }); //<--newUser.save
+
+
+
+   }else {
+       User.findOneAndUpdate({ '_id' : profile.id }, { 'friends' : profile._json.friends.data}, function(err, user){
+         console.log('THIS IS FOUND AND UPDATED: ', user);
+         return done(err,user);
+       });
+
+   }
+
+ }); //<---user findOne
+
+}));
+
+
 
 //==================================
-
+app.use(express.static('public'));
 app.use(morgan('dev'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -23,83 +90,96 @@ app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+
+
+
  //==================================
-//ROUTES
-
-// var passportController = require('./controllers/passportController.js');
-// app.use('/', passportController);
 
 
-app.get('/', function(req,res){
-  // isLoggedIn();
-  res.render('index.ejs', { user: req.user });
-});
+   //PASSPORT SERIALIZATIONS
+   passport.serializeUser(function(user, done) {
+      done(null, user.id);
+   });
 
-//PROFILE
-app.get('/profile', require('connect-ensure-login').ensureLoggedIn(),
-  function(req,res){
-    res.render('profile.ejs', { user: req.user });
-});
-
-//MESSANGER ROUTE
-app.get('/messanger', function(req, res){
-    res.render('messanger.ejs', { user: req.user });
-});
-
-//FRIENDS ROUTE
-app.get('/friends', function(req, res){
-  res.render('friends.ejs', { user: req.user });
-});
-
-app.get('/json', function(req, res){
-  console.log(req.user.id);
-  User.findById(req.user.id, function(err, data){
-    res.send(data);
-  });
-});
-
-// //GETFRIENDS ROUTE for finding your friends
-app.post('/createNewConvo', function(req, res){
-  console.log("============== createorfind accessed ==============", res);
-
-  var newConvo = Convo();
-
-    // newConvo.id = res.fullId;
-
-
-    // newConvo.save(function(err){
-    //   console.log('saving error: ', err);
-    // });
-
-});
-
-//LOGOUT
-app.get('/logout', function(req, res) {
-    req.logout();
-    res.redirect('/');
-});
+   passport.deserializeUser(function(id, done) {
+      User.findById(id, function(err, user) {
+          done(err, user);
+      });
+   });
 
 
 
 
-//FACEBOOK OAUTH
-app.get('/login/facebook',
-  passport.authenticate('facebook',  { scope: ['user_friends', 'email'] })
-);
 
-//FACEBOOK OAUTH CALLBACK
-app.get('/login/facebook/return',
-  passport.authenticate('facebook', { failureRedirect: '/' }),
-  function(req,res){
-    res.redirect('/');
-});
+ app.get('/', function(req,res){
+   // isLoggedIn();
+   res.render('index.ejs', { user: req.user });
+ });
 
-//IS LOGGED IN
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated())
-        return next();
-    res.redirect('/');
-}
+ //PROFILE
+ app.get('/profile', require('connect-ensure-login').ensureLoggedIn(),
+   function(req,res){
+     res.render('profile.ejs', { user: req.user });
+ });
+
+ //MESSANGER ROUTE
+ app.get('/messanger', function(req, res){
+     res.render('messanger.ejs', { user: req.user });
+ });
+
+ //FRIENDS ROUTE
+ app.get('/friends', function(req, res){
+   res.render('friends.ejs', { user: req.user });
+ });
+
+ app.get('/json', function(req, res){
+   console.log(req.user.id);
+   User.findById(req.user.id, function(err, data){
+     res.send(data);
+   });
+ });
+
+ // //GETFRIENDS ROUTE for finding your friends
+ app.post('/createNewConvo', function(req, res){
+   console.log("============== createorfind accessed ==============", res);
+
+   var newConvo = Convo();
+
+     // newConvo.id = res.fullId;
+
+
+     // newConvo.save(function(err){
+     //   console.log('saving error: ', err);
+     // });
+
+ });
+
+ //LOGOUT
+ app.get('/logout', function(req, res) {
+     req.logout();
+     res.redirect('/');
+ });
+
+
+ //FACEBOOK OAUTH
+ app.get('/login/facebook',
+   passport.authenticate('facebook',  { scope: ['user_friends', 'email'] })
+ );
+
+ //FACEBOOK OAUTH CALLBACK
+ app.get('/login/facebook/return',
+   passport.authenticate('facebook', { failureRedirect: '/' }),
+   function(req,res){
+     res.redirect('/');
+ });
+
+ //IS LOGGED IN
+ function isLoggedIn(req, res, next) {
+     if (req.isAuthenticated())
+         return next();
+     res.redirect('/');
+ }
 
 
 
