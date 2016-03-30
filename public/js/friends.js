@@ -62,8 +62,9 @@ var minlength = 3;
 
 
   //FINDS OR CREATES NEW USER CONVO
-  $('li').click(function(e) {
-    // console.log($(this).prop('id'));
+
+  $('#my-friends > li').click(function(e) {
+    console.log($(this).prop('id'));
     $friendId = $(this).prop('id');
 
     $.ajax({

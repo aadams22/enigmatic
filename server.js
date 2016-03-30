@@ -12,6 +12,19 @@ var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
 mongoose.connect(mongoUri);
 
 
+//==================================
+app.use(express.static('public'));
+app.use(morgan('dev'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin grey', resave: true, saveUninitialized: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+//==================================
+
+
+
 // require('./config/routes.js')(app,mongoose,passport,User)
 // require('./config/passport.js')(app,passport,Strategy)
 //==================================
@@ -23,16 +36,16 @@ passport.use(new Strategy({
  enableProof: true
 },
 function(accessToken, refreshToken, profile, done){
- console.log('this is new Strategy user profile: ', profile);
- console.log('this is the access token: ', accessToken);
- console.log('this is the refresh token: ', refreshToken);
+ // console.log('this is new Strategy user profile: ', profile);
+ // console.log('this is the access token: ', accessToken);
+ // console.log('this is the refresh token: ', refreshToken);
  // console.log('these are your friends: ', profile._json.friends.data);
  var theAccessToken = accessToken;
  var theRefreshToken = refreshToken;
 
 
  User.findOne({ '_id' : profile.id }, function(err, user) {
-   console.log('this is find or create user ', user);
+   console.log('this is find or create user ');
 
 
    if (err) {
@@ -82,48 +95,37 @@ function(accessToken, refreshToken, profile, done){
 
 
 
-//==================================
-app.use(express.static('public'));
-app.use(morgan('dev'));
-app.use(require('cookie-parser')());
-app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin grey', resave: true, saveUninitialized: true}));
-app.use(passport.initialize());
-app.use(passport.session());
 
-
-
-//==================================
 //SOCKETS
 var http = require('http').Server(app),
     io   = require('socket.io')(http);
 
 var clients = [];
-//
-// io.on('connection', function(socket) {
-//
-//   // console.log('Socket connected: ', socket.id);
-//   clients.push(socket.id);
-//   // console.log('All clients: ', clients);
-//
-//   io.emit('allClients', clients);
-//
-//   // socket.on('socket-id', function(socketId, msg){
-//   //   console.log('THIS IS CONNECTED: ', socketId);
-//   //   io.to(socketId).emit('Private', 'You are the chosen one');
-//   // });
-//
-//
-//   socket.on('disconnect', function() {
-//     var index = clients.indexOf(socket.id);
-//     if (index != -1) {
-//       clients.splice(index, 1);
-//       console.info('Client disconnected: ', + socket.id);
-//       // console.log('All clients: ', clients);
-//     }
-//   })
-//
-// });
+
+io.on('connection', function(socket) {
+
+  console.log('Socket connected: ', socket.id);
+  clients.push(socket.id);
+  // console.log('All clients: ', clients);
+
+  io.emit('allClients', clients);
+
+  socket.on('socket-id', function(socketId, msg){
+    console.log('THIS IS CONNECTED: ', socketId);
+    io.to(socketId).emit('Private', 'You are the chosen one');
+  });
+
+
+  socket.on('disconnect', function() {
+    var index = clients.indexOf(socket.id);
+    if (index != -1) {
+      clients.splice(index, 1);
+      console.info('Client disconnected: ', + socket.id);
+      // console.log('All clients: ', clients);
+    }
+  })
+
+});
 
 
 
@@ -180,25 +182,27 @@ var clients = [];
    console.log('my name: ', req.user.userProfile.displayName);
    var combined = parseInt(req.user.id + req.body.id);
    var newConvo = Convo();
+   var socketId = null;
 
-
-    io.on('connection', function(socket) {
-      console.log('Socket connected: ', socket.id);
-      clients.push(socket.id);
-      socket.on('socket-id', function(socketId, msg){
-        console.log('THIS IS CONNECTED: ', socketId);
-        io.to(socketId).emit('Private', 'You are the chosen one');
-      });
-    });
+    //
+    // io.on('connection', function(socket) {
+    //   console.log('Socket connected: ', socket.id);
+    //   // var socketId = socket.id;
+    //   clients.push(socket.id);
+    //   socket.on('socket-id', function(socketId, msg){
+    //     console.log('THIS IS CONNECTED: ', socketId);
+    //     io.to(socketId).emit('Private', msg);
+    //   });
+    // });
 
     newConvo.id = combined;
     newConvo.participants.push(req.body.name, req.user.userProfile.displayName);
-    newConvo.socketId(socket.id);
-
-     newConvo.save(function(err){
-       console.log('saving error: ', err);
-       res.redirect('/messanger')
-     });
+    // newConvo.socketId = socketId;
+    //
+    //  newConvo.save(function(err){
+    //    console.log('saving error: ', err);
+    //    res.redirect('/messanger')
+    //  });
 
  });
 
