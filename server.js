@@ -68,7 +68,11 @@ function(accessToken, refreshToken, profile, done){
 
 
     }else {
-        return done(err,user);
+        User.findOneAndUpdate({ '_id' : profile.id }, { 'friends' : profile._json.friends.data}, function(err, user){
+          console.log('THIS IS FOUND AND UPDATED: ', user);
+          return done(err,user);
+        });
+
     }
 
   }); //<---user findOne
@@ -136,6 +140,9 @@ app.get('/json', function(req, res){
 app.post('/createNewConvo', function(req, res){
   console.log("============== createorfind accessed ==============", res);
   var newConvo = Convo();
+
+    newConvo.id = res.fullId;
+
 
     newConvo.save(function(err){
       console.log('saving error: ', err);

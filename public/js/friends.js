@@ -1,13 +1,20 @@
-var socket = io();
+// var socket = io();
 
 $(function(){
 
 //FINDS USER'S CURRENT FRIENDS
-  var minlength = 3;
+var minlength = 3;
+
   $('#getfriends').keyup(function(e){
     e.preventDefault();
     var searchString = $(this).val();
 
+      //appends empty li to fill with search results
+      if (searchString.length < 2) {
+        $('#my-friends').append('<li class="searching"></li>');
+      };
+
+      //searches and matches results on each keyup
       if (searchString.length >= minlength ) {
           console.log("getting searchString",  searchString);
         $.ajax({
@@ -22,22 +29,20 @@ $(function(){
           if( response.friends.length != 0 ) {
             for (var i = 0; i < response.friends.length; i++) {
               console.log(response.friends[i]);
-              $('ul').append("<li id=" + response.friends[i].id + ">" + response.friends[i].name + "</li>");
+              $('.searching').html(response.friends[i].name);
+              $('.searching').attr('id', response.friends[i].id);
             }
 
           } //<-- if statement.
 
 
-          //==========================================
-          //APPENDS WITH EVERY KEYUP WHEN FRIENDS.LENGTH == 0
-          // if( response.friends.length == 0 ){
-          //   console.log('you have no friends');
-          //
-          //   $('ul').append('<li>No match found. Make more friends</li>');
-          //   return false;
-          // }
-          //==========================================
-
+          //WHEN FRIENDS.LENGTH == 0 ADDS A MESSAGE
+          if( response.friends.length == 0 ){
+            console.log('you have no friends');
+            $('.searching').html("No match found. Make more friends");
+            // $('ul').append('<li>No match found. Make more friends</li>');
+            return false;
+          }
 
         },
         //error
@@ -49,17 +54,18 @@ $(function(){
 
   });
 
+
   //FINDS OR CREATES NEW USER CONVO
   $('li').click(function(e) {
     console.log(e);
     console.log($(this).prop('id'));
     $friendId = $(this).prop('id');
 
-    $.ajax {
+    $.ajax ({
       method: GET,
       url: '/json',
       data: { 'id' : $friendId }
-    }.done(
+    }).done(
       //success
       function(response){
         console.log(response);
@@ -72,9 +78,11 @@ $(function(){
         console.log(err);
       });
 
-
   });
 
+
+
+//findOrCreateUserConvo
 function findOrCreateUserConvo(response) {
   console.log(response);
 
@@ -82,13 +90,13 @@ function findOrCreateUserConvo(response) {
     if (response.convo[i].id == response.convo[i].id + $friendId.parsInt() || $friendId.parsInt() + response.convo[i].id) {
         console.log("freinds convo match!");
     }else {
-      $.ajax {
+      $.ajax ({
         method: POST,
         url: '/createNewConvo',
         data: { data : response }
-      }
+      });
     }
-
+  }
 } //<--findOrCreateUserConvo
 
 

@@ -6,10 +6,10 @@
 
 <div class="convo-container">
   <input id="getfriends" type="text" name="users" placeholder="search friends">
-  <ul>
+  <ul id="my-friends">
     <li>You have <%=user.totalFriends%> friends</li>
     <% for (var i=0; i < user.friends.length; i++ ) { %>
-    <li>friend <%= user.friends[i].name %></li>
+    <li><%= user.friends[i].name %></li>
     <% } %>
     <li>Hayleigh</li>
   </ul>
