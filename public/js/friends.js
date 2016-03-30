@@ -10,7 +10,7 @@ var minlength = 3;
     var searchString = $(this).val();
 
       //appends empty li to fill with search results
-      if (searchString.length === 1) {
+      if (searchString.length === 3) {
         $('#my-friends').append('<li class="searching"></li>');
       };
 
@@ -20,7 +20,6 @@ var minlength = 3;
         $.ajax({
             method: 'GET',
             url: '/json',
-            data: { 'friends.name' : searchString }
         }).done(
         //success
         function(response) {
@@ -29,8 +28,16 @@ var minlength = 3;
           if( response.friends.length != 0 ) {
             for (var i = 0; i < response.friends.length; i++) {
               console.log(response.friends[i]);
-              $('.searching').html(response.friends[i].name);
-              $('.searching').attr('id', response.friends[i].id);
+
+              $('.searching').html(' ');
+              $('.searching').attr(' ');
+              if(response.friends[i].name.indexOf(searchString) >= 0){
+                $('.searching').html(response.friends[i].name);
+                $('.searching').attr('id', response.friends[i].id);
+              }else {
+                $('.searching').html("No match found. Make more friends");
+              }
+
             }
 
           } //<-- if statement
