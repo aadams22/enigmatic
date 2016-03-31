@@ -7,26 +7,38 @@ $(function(){
 
 var onlineUsers = [];
 
-function addName(name){
+function addName(response){
 
   socket.on('allClients', function(allClients) {
     console.log(allClients);
     //defines online user's name
-    var userName = name;
-    console.log("THIS IS ONLINE USERS", onlineUsers);
+    var userName = response.userProfile.displayName;
 
     //need to make sure a person isn't allowed to be added twice to either client array
       $(allClients).each(function(index, value) {
+        //gives online user's id: userId and current socket.id
+        var newId = response._id + value;
         if($.inArray(userName, onlineUsers) == -1) {
         //adds user to online user list with socket id as id
-        $convos.append('<li id='+ value + '>' + userName + '</li>');
+        $convos.append('<li id='+ newId + '>' + userName + '</li>');
         onlineUsers.push(userName);
-        console.log("THIS IS SECOND onlineUsers", onlineUsers);
+        // console.log("THIS IS SECOND onlineUsers", onlineUsers);
       }
 
       $('#convos > li').click(function() {
-        var onlineUserSocketId = $(this).prop('id');
-        window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
+        var onlineUserListId = $(this).prop('id').split('/');
+        var onlineUserId = onlineUserListId[0];
+        console.log(onlineUserId)
+        var onlineUserSocketId = '/' + onlineUserListId[1];
+        console.log(onlineUserSocketId)
+        // window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
+        $.ajax({
+          method: 'POST',
+          url: '/createNewConvo',
+          data: { id: onlineUserId }
+        });
+
+
       });
 
     });
@@ -57,7 +69,7 @@ if(true) {
     }).done(
     //success
     function(response){
-      addName(response.userProfile.displayName);
+      addName(response);
     },
     //error
     function(err){

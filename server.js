@@ -184,17 +184,8 @@ io.on('connection', function(socket) {
    var combined = parseInt(req.user.id + req.body.id);
    var newConvo = Convo();
    var socketId = null;
+   console.log(combined);
 
-    //
-    // io.on('connection', function(socket) {
-    //   console.log('Socket connected: ', socket.id);
-    //   // var socketId = socket.id;
-    //   clients.push(socket.id);
-    //   socket.on('socket-id', function(socketId, msg){
-    //     console.log('THIS IS CONNECTED: ', socketId);
-    //     io.to(socketId).emit('Private', msg);
-    //   });
-    // });
 
     newConvo.id = combined;
     newConvo.participants.push(req.body.name, req.user.userProfile.displayName);
