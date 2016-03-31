@@ -31,28 +31,21 @@ function addName(name){
 
     });
   });
-
-
-    var onlineUserSocketId = window.location.hash.substring(1);
-
-    $('form').submit(function(){
-      socket.emit('socket-id', onlineUserSocketId, $('#m').val());
-      // socket.emit('Private', $('#m').val());
-      $('#m').val('');
-      return false;
-    });
-    socket.on('Private', function(msg){
-      console.log('THIS IS PRIVATE MESSAGE: ', msg);
-      $('#messages').append($('<li>').text(msg));
-    });
-
-
-
-
-
 }; //<--addName
 
+  var onlineUserSocketId = window.location.hash.substring(1);
 
+  $('form').submit(function(){
+    socket.emit('socket-id', onlineUserSocketId, $('#m').val());
+    $('#m').val('');
+    return false;
+  });
+
+
+  socket.on('Private', function(msg){
+    console.log('THIS IS PRIVATE MESSAGE: ', msg);
+    $('#messages').append($('<li>').text(msg));
+  });
 
 
 

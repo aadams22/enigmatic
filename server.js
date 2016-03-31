@@ -113,8 +113,7 @@ io.on('connection', function(socket) {
   socket.on('socket-id', function(socketId, msg){
     console.log('THIS IS CONNECTED: ', socketId);
     console.log('1. THIS IS THE MESSAGE: ', msg);
-    io.to(socketId).emit('Private', msg);
-    console.log('2. THIS IS THE MESSAGE: ', msg);
+    socket.broadcast.to(socketId).emit('Private', msg);
   });
 
 

@@ -6,10 +6,8 @@
   <ul>
     <li>ID: <%= user.id %></li>
     <li>Name: <%= user.userProfile.displayName %></li>
-
-    <% if (user.userProfile.emails) { %>
-    <li>Email: <%= user.emails[0].value %></li>
-    <% } %>
+    <li>Email: <%= user.userProfile.email %></li>
+    <li>Total Facebook Friends: <%= user.totalFriends %></li>
   </ul>
 
 </div>
