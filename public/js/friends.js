@@ -14,7 +14,7 @@ var minlength = 3;
         $('#my-friends').append('<li class="searching"></li>');
       };
 
-      //searches and matches results on each keyup
+      //for the search input searches and matches results on each keyup
       if (searchString.length >= minlength ) {
           console.log("getting searchString",  searchString);
         $.ajax({
@@ -24,7 +24,7 @@ var minlength = 3;
         //success
         function(response) {
 
-          //searches for users friends
+          //searches for currnet user's facebook friends who have liked the app
           if( response.friends.length != 0 ) {
             for (var i = 0; i < response.friends.length; i++) {
               console.log(response.friends[i]);
@@ -91,12 +91,16 @@ function findOrCreateUserConvo(response) {
   // console.log('THIS IS THE RESPONSE', response);
   // console.log(response.friends[0]);
 
+  //if the data from the ajax call returns convos then search
+  //through them and find one that matches friend's id and current users id
   if(response.convo != null) {
     for (var i = 0; i < response.convo.length; i++) {
       if (response.convo[i].id == response._id + $friendId.parsInt() || $friendId.parsInt() + response._id) {
           console.log("freinds convo match!");
       }
     }
+  //if convo doesn't currenlty exist between the two users then send a post request
+  //to create one on in the server and save to database.
   }else {
     $.ajax ({
       method: 'POST',

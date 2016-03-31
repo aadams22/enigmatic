@@ -130,10 +130,9 @@ io.on('connection', function(socket) {
 
 
 
- //==================================
+//==================================
+//PASSPORT SERIALIZATIONS
 
-
-   //PASSPORT SERIALIZATIONS
    passport.serializeUser(function(user, done) {
       done(null, user.id);
    });
@@ -144,9 +143,7 @@ io.on('connection', function(socket) {
       });
    });
 
-
-
-
+//==================================
 
  app.get('/', function(req,res){
    // isLoggedIn();
@@ -181,16 +178,23 @@ io.on('connection', function(socket) {
    console.log("============== createorfind accessed ==============");
    console.log('name: ', req.body.name);
    console.log('my name: ', req.user.userProfile.displayName);
-   var combined = parseInt(req.user.id + req.body.id);
    var newConvo = Convo();
-   var socketId = null;
-   console.log(combined);
 
+    //creates a unique convo id of the two user's combined unique ids so that it can't be
+    //duplicated and can be accessed by both users
+    newConvo.id = parseInt(req.user.id + req.body.id);
 
-    newConvo.id = combined;
+    //saving the participants of the conversation to the convo so that their
+    //names can be added to the chat
     newConvo.participants.push(req.body.name, req.user.userProfile.displayName);
-    // newConvo.socketId = socketId;
-    //
+
+    //if the user is currently online, the online user's socketId will be saved to
+    //the new convo so that it can be accessed once redirected to /messenger
+    if(req.body.id != null) {
+      newConvo.socketId = req.body.socketId;
+    }
+
+
     //  newConvo.save(function(err){
     //    console.log('saving error: ', err);
     //    res.redirect('/messanger')

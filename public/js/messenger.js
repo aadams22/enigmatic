@@ -37,11 +37,14 @@ function addName(response){
         //this id is used for the private messaging at /messenger
         var onlineUserSocketId = '/' + $(this).prop('id').split('/')[1];
 
+        //THIS IS FOR TESTING PURPOSES ONLY IN ORDER TO NOT OVERPOPULATE MY DATABASE
+        window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
+
         //sends data to server to find or create new conversation and redirect to /messenger
         $.ajax({
           method: 'POST',
           url: '/createNewConvo',
-          data: { id: onlineUserId }
+          data: { id: onlineUserId,  socketId: onlineUserSocketId }
         });
 
 
@@ -51,7 +54,7 @@ function addName(response){
   });
 }; //<--addName
 
-  // var onlineUserSocketId = window.location.hash.substring(1);
+  var onlineUserSocketId = window.location.hash.substring(1);
 
   $('form').submit(function(){
     socket.emit('socket-id', onlineUserSocketId, $('#m').val());
