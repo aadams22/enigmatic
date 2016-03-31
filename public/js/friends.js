@@ -62,7 +62,8 @@ var minlength = 3;
 
 
   //FINDS OR CREATES NEW USER CONVO
-
+  //this will get information from the json page in order to find if the user
+  //already has a conversation with the person.
   $('#my-friends > li').click(function(e) {
     console.log($(this).prop('id'));
     $friendId = $(this).prop('id');
@@ -73,6 +74,7 @@ var minlength = 3;
     }).done(
       //success
       function(response){
+        //sends response to findOrCreateUserConvo function to sort through the data
         findOrCreateUserConvo(response);
       },
       //error
@@ -84,7 +86,7 @@ var minlength = 3;
 
 
 
-//findOrCreateUserConvo
+//this will send data to the server to find or create a new conversation
 function findOrCreateUserConvo(response) {
   // console.log('THIS IS THE RESPONSE', response);
   // console.log(response.friends[0]);

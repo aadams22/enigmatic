@@ -1,4 +1,4 @@
-  // console.log('messanger.js');
+
 var socket = io();
 
 
@@ -16,9 +16,11 @@ function addName(response){
 
     //need to make sure a person isn't allowed to be added twice to either client array
       $(allClients).each(function(index, value) {
+
         //gives online user's id: userId and current socket.id
         var newId = response._id + value;
         if($.inArray(userName, onlineUsers) == -1) {
+
         //adds user to online user list with socket id as id
         $convos.append('<li id='+ newId + '>' + userName + '</li>');
         onlineUsers.push(userName);
@@ -26,12 +28,16 @@ function addName(response){
       }
 
       $('#convos > li').click(function() {
-        var onlineUserListId = $(this).prop('id').split('/');
-        var onlineUserId = onlineUserListId[0];
-        console.log(onlineUserId)
-        var onlineUserSocketId = '/' + onlineUserListId[1];
-        console.log(onlineUserSocketId)
-        // window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
+        //the id from the clicked <li> 0 is equivilant to the user's personal id
+        //this id will be sent to server side to find if the user already has a conversation
+        //or to make a new conversation
+        var onlineUserId = $(this).prop('id').split('/')[0];
+
+        //the id from the clicked <li> 0 is equivilant to the user's current socket id
+        //this id is used for the private messaging at /messenger
+        var onlineUserSocketId = '/' + $(this).prop('id').split('/')[1];
+
+        //sends data to server to find or create new conversation and redirect to /messenger
         $.ajax({
           method: 'POST',
           url: '/createNewConvo',
@@ -45,7 +51,7 @@ function addName(response){
   });
 }; //<--addName
 
-  var onlineUserSocketId = window.location.hash.substring(1);
+  // var onlineUserSocketId = window.location.hash.substring(1);
 
   $('form').submit(function(){
     socket.emit('socket-id', onlineUserSocketId, $('#m').val());
@@ -60,7 +66,7 @@ function addName(response){
   });
 
 
-
+//an ajax call set on a timeout to refresh online user list
 if(true) {
     $.ajax({
       method: 'GET',
@@ -69,6 +75,7 @@ if(true) {
     }).done(
     //success
     function(response){
+      //sends response to addName to be handled
       addName(response);
     },
     //error
@@ -88,7 +95,6 @@ if(true) {
 
 
 
-// // ===========================================
 
 
 
