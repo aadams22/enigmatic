@@ -25,42 +25,30 @@ function addName(name){
       }
 
       $('#convos > li').click(function() {
-        var onlineUserId = $(this).prop('id');
-        window.location.assign("http://localhost:8080/messanger#chatOnMessanger(" + onlineUserId + ")");
+        var onlineUserSocketId = $(this).prop('id');
+        window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
       });
 
-      if(window.location.hash) {
-        console.log("this is the window.location.hash sub: ", window.location.hash.substr(1))
-        eval(window.location.hash.substr(1));
-      }
-
-
-      function chatOnMessanger(onlineUserId){
-        console.log('chatOnMessanger accessed');
-
-        console.log('chatOnMessanger accessed after location');
-        console.log("this is online user's id from onclcik", onlineUserId);
-        socket.emit('socket-id', onlineUserId);
-
-        $('form').submit(function(){
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
-          return false;
-        });
-        socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(msg));
-        });
-
-      }
-
-
     });
-
-    socket.on('Private', function(msg) {
-      console.log(msg);
-    });
-
   });
+
+
+    var onlineUserSocketId = window.location.hash.substring(1);
+
+    $('form').submit(function(){
+      socket.emit('socket-id', onlineUserSocketId, $('#m').val());
+      // socket.emit('Private', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+    socket.on('Private', function(msg){
+      console.log('THIS IS PRIVATE MESSAGE: ', msg);
+      $('#messages').append($('<li>').text(msg));
+    });
+
+
+
+
 
 }; //<--addName
 
