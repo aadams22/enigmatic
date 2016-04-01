@@ -123,14 +123,16 @@ io.on('connection', function(socket) {
 
 
   socket.on('new-message', function(data){
-    console.log('THIS IS CONNECTED: ', data.socketId);
+    var id = data.socketId;
+    console.log('THIS IS CONNECTED: ', id);
     console.log('1. THIS IS THE MESSAGE: ', data);
     console.log('2. THIS IS THE USERNAME: ', socket.username);
-    var id = data.socketId;
-    io.to(id).emit('Private', {
-      name: socket.username,
-      message: data
-    });
+
+    io.emit('Private', "Message is going from server to client");
+    // io.to(id).emit('Private', {
+    //   name: socket.username,
+    //   message: data
+    // });
   });
 
 
@@ -189,6 +191,8 @@ io.on('connection', function(socket) {
      res.send(data);
    });
  });
+
+
 
  // //GETFRIENDS ROUTE for finding your friends
  app.post('/createNewConvo', function(req, res){

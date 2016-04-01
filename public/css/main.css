@@ -76,11 +76,13 @@ a:hover {
 /*MESSENGER*/
 
 #chat-container {
+  position: absolute;
   height: 600px;
   width: 55%;
   border: 1px solid black;
   background-color: #F8F7F7;
-  margin-left: auto;
+  margin-top: 5%;
+  margin-left: 40%;
   margin-right: auto;
   -webkit-box-shadow: 2px 2px 68px -3px #666666;
   -moz-box-shadow: 2px 2px 68px -3px #666666;
@@ -165,6 +167,32 @@ form > button:hover {
 #getfriends:hover {
   background-color: #d0dde1;
 }
+
+
+#online-users-container {
+  position: absolute;
+  z-index: 1;
+  height: 600px;
+  width: 28%;
+  border: 1px solid black;
+  background-color: #F8F7F7;
+  margin-left: 0%;
+  margin-top: 18%;
+  -webkit-box-shadow: 2px 2px 68px -3px #666666;
+  -moz-box-shadow: 2px 2px 68px -3px #666666;
+  box-shadow: 2px 2px 68px -3px #666666;
+}
+
+#online-users-container > ul > li {
+  padding: 1em;
+  list-style: none;
+  border-bottom: 1px solid #666666;
+}
+
+#online-users-container > ul > li:hover {
+  background-color: darkgrey;
+}
+
 
 /*====================================*/
 /*MEDIA QUERY*/

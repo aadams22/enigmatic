@@ -7,7 +7,7 @@ $(function(){
 
 var onlineUsers = [];
 
-function addName(response){
+function onlineUsersChat(response){
 
   socket.on('allClients', function(allClients) {
     console.log(allClients);
@@ -40,6 +40,8 @@ function addName(response){
         //THIS IS FOR TESTING PURPOSES ONLY IN ORDER TO NOT OVERPOPULATE MY DATABASE
         window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
 
+
+
         //sends data to server to find or create new conversation and redirect to /messenger
         $.ajax({
           method: 'POST',
@@ -58,7 +60,10 @@ function addName(response){
 
   $('form').submit(function(){
 
-    //sends message to the server to be saved
+
+
+
+    // sends message to the server to be saved
     $.ajax({
       method: 'POST',
       url: '/saveMessage'
@@ -74,11 +79,22 @@ function addName(response){
     return false;
   });
 
+function addMessage(data) {
 
-  socket.on('Private', function(msg){
-    console.log('THIS IS PRIVATE MESSAGE: ', msg);
-    $('#messages').append($('<li>').text(msg));
+}
+
+  socket.on('Private', function(data){
+    console.log('THIS IS PRIVATE MESSAGE: ', data);
+    // $('#messages').append($('<li>').text(data));
   });
+
+
+
+
+
+
+
+
 
 
 //an ajax call set on a timeout to refresh online user list
@@ -91,7 +107,7 @@ if(true) {
     //success
     function(response){
       //sends response to addName to be handled
-      addName(response);
+      onlineUsersChat(response);
     },
     //error
     function(err){
