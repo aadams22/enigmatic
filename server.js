@@ -113,7 +113,7 @@ io.on('connection', function(socket) {
   // function addNickname() {
   //   io.sockets.emit('userNames', Object.keys(clients));
   // };
-  console.log('THESE ARE CLIENTS: ', clients);
+
   console.log('Socket connected: ', socket.id);
   clients.push(socket.id);
   // console.log('All clients: ', clients);
@@ -123,25 +123,25 @@ io.on('connection', function(socket) {
 
 
   socket.on('new-message', function(data){
-    console.log('stufffs ', data)
-    console.log('THIS IS CONNECTED: ', typeof data.socketId);
+    console.log('THIS IS CONNECTED: ', data.socketId);
     console.log('1. THIS IS THE MESSAGE: ', data);
     console.log('2. THIS IS THE USERNAME: ', socket.username);
-    io.to(data.socketId).emit('Private', {
+    var id = data.socketId;
+    io.to(id).emit('Private', {
       name: socket.username,
       message: data
     });
   });
 
 
-  // socket.on('disconnect', function() {
-  //   var index = clients.indexOf(socket.id);
-  //   if (index != -1) {
-  //     clients.splice(index, 1);
-  //     console.info('Client disconnected: ', + socket.id);
-  //     // console.log('All clients: ', clients);
-  //   }
-  // })
+  socket.on('disconnect', function() {
+    var index = clients.indexOf(socket.id);
+    if (index != -1) {
+      clients.splice(index, 1);
+      console.info('Client disconnected: ', + socket.id);
+      // console.log('All clients: ', clients);
+    }
+  })
 
 });
 
