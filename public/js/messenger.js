@@ -32,36 +32,69 @@ function onlineUsersChat(response){
         //this id will be sent to server side to find if the user already has a conversation
         //or to make a new conversation
         var onlineUserId = $(this).prop('id').split('/')[0];
-
+        console.log('ONLINE USER ID: ', onlineUserId);
         //the id from the clicked <li> 0 is equivilant to the user's current socket id
         //this id is used for the private messaging at /messenger
         var onlineUserSocketId = '/' + $(this).prop('id').split('/')[1];
+        console.log('ONLINE USER SOCKET ID: ', onlineUserSocketId);
 
-        //THIS IS FOR TESTING PURPOSES ONLY IN ORDER TO NOT OVERPOPULATE MY DATABASE
-        window.location.assign("http://localhost:8080/messanger#" + onlineUserSocketId);
-
-
-
-        //sends data to server to find or create new conversation and redirect to /messenger
         $.ajax({
-          method: 'POST',
-          url: '/createNewConvo',
-          data: { id: onlineUserId,  socketId: onlineUserSocketId }
-        });
+          method: 'GET',
+          url: '/json'
+        }).done(
+          function(response) {
+            //checks for convos
+            if (response.convos.length == 0) {
+              console.log('NO CONVOS!');
+              addNewConvo(onlineUserSocketId, onlineUserId);
+            }else {
+              addOldConvoToChat(response.convos);
+            }
+          },
+          function(err) {
+            console.log(err);
+          }
+        );
+
+        //sends the post request with user id and socket id to server to create a new convo for users
+        function addNewConvo(onlineUserSocketId, onlineUserId) {
+          // sends data to server to find or create new conversation and redirect to /messenger
+          $.ajax({
+            method: 'POST',
+            url: '/createNewConvo',
+            data: { id: onlineUserId,  socketId: onlineUserSocketId }
+          });
+        } //<--addNewConvo
+
+        //populates current chat messanger with old conversation data;
+        function addOldConvoToChat(convo) {
+          console.log('addOldConvoToChat has been accessed: ', convo);
+          //empties chat box of messages from previous convos with other users
+          $('#messages').empty();
+          
+          //!!NEED TO SORT THROUGH RESULTS TO FIND CORRECT CONVO
+
+
+
+          //this should append old chats to messanger
+          for (var i = 0; i < array.length; i++) {
+            $('#messages').append('<li>'+ convo[i].message + '</li>');
+          }
+        };
 
 
       });
 
     });
+
   });
+
 }; //<--addName
 
-  var onlineUserSocketId = window.location.hash.substring(1);
+
 
   $('form').submit(function(){
-
-
-
+    console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
 
     // sends message to the server to be saved
     $.ajax({
@@ -69,7 +102,7 @@ function onlineUsersChat(response){
       url: '/saveMessage'
       // data: { message: $('#m').val() }
     });
-
+    console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
     socket.emit('new-message', {
       socketId: onlineUserSocketId,
       msg: $('#m').val()
