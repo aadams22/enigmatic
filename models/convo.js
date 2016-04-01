@@ -8,7 +8,8 @@ var convoSchema = new Schema({
   participants: [],
   socketId: { type: String },
   created_at: { type: Date },
-  updated_at: { type: Date }
+  updated_at: { type: Date },
+  messages: []
 });
 
 

@@ -13,7 +13,7 @@ function addName(response){
     console.log(allClients);
     //defines online user's name
     var userName = response.userProfile.displayName;
-
+    socket.emit('get-name', userName);
     //need to make sure a person isn't allowed to be added twice to either client array
       $(allClients).each(function(index, value) {
 
@@ -57,7 +57,19 @@ function addName(response){
   var onlineUserSocketId = window.location.hash.substring(1);
 
   $('form').submit(function(){
-    socket.emit('socket-id', onlineUserSocketId, $('#m').val());
+
+    //sends message to the server to be saved
+    $.ajax({
+      method: 'POST',
+      url: '/saveMessage'
+      // data: { message: $('#m').val() }
+    });
+
+    socket.emit('new-message', {
+      socketId: onlineUserSocketId,
+      msg: $('#m').val()
+    });
+
     $('#m').val('');
     return false;
   });
