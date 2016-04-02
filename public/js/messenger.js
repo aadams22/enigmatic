@@ -38,7 +38,10 @@ function onlineUsersChat(response){
         var onlineUserSocketId = '/' + $(this).prop('id').split('/')[1];
         console.log('ONLINE USER SOCKET ID: ', onlineUserSocketId);
         var onlineUserName = $(this).text();
-         window.location.hash = onlineUserSocketId;
+        //clears previous conversation's socket id from window.location url
+        window.location.hash = '';
+        //adds conversation's socket id into window.location url to be accessed later
+        window.location.hash = onlineUserSocketId;
 
         $.ajax({
           method: 'GET',
@@ -120,13 +123,12 @@ function onlineUsersChat(response){
        console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
      }
 
-    // sends message to the server to be saved
-    // $.ajax({
-    //   method: 'POST',
-    //   url: '/saveMessage',
-    //   data: { 'message': newMsg }
-    // });
-    // console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
+    //sends message to the server to be saved
+    $.ajax({
+      method: 'POST',
+      url: '/saveMessage',
+      data: { 'message': newMsg }
+    });
 
     // emits on socket the message to the specifically clicked user
     socket.emit('new-message', {
