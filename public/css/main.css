@@ -89,25 +89,32 @@ a:hover {
   box-shadow: 2px 2px 68px -3px #666666;
 }
 
+#chat-container > ul {
+    overflow-y: scroll;
+}
+
 form {
-  background-color: #000;
+  position: relative;
   padding: 3px;
-  position: fixed;
-  width: 55%;
-  margin-top: 55%%;
+  width: 100%;
+  float: bottom; 
 }
 
 form > input {
-  border: 0;
+  position: absolute;
+  background-color: #F8F7F7;
+  border: 1px solid #666666;
   padding: 10px;
   width: 90%;
   margin-right: .5%;
 }
 
 form > button {
+  position: relative;
+  float: right;
   width: 9%;
   background: #d0dde1;
-  border: none;
+  border: 1px solid #666666;
   padding: 10px;
 }
 
@@ -145,6 +152,7 @@ form > button:hover {
   -webkit-box-shadow: 2px 2px 68px -3px #666666;
   -moz-box-shadow: 2px 2px 68px -3px #666666;
   box-shadow: 2px 2px 68px -3px #666666;
+  overflow-y: scroll;
 }
 
 .convo-container > ul > li {
@@ -181,6 +189,7 @@ form > button:hover {
   -webkit-box-shadow: 2px 2px 68px -3px #666666;
   -moz-box-shadow: 2px 2px 68px -3px #666666;
   box-shadow: 2px 2px 68px -3px #666666;
+  overflow-y: scroll;
 }
 
 #online-users-container > ul > li {
