@@ -125,14 +125,15 @@ io.on('connection', function(socket) {
   socket.on('new-message', function(data){
     var id = data.socketId;
     console.log('THIS IS CONNECTED: ', id);
-    console.log('1. THIS IS THE MESSAGE: ', data);
+    console.log('1. THIS IS THE MESSAGE: ', data.msg);
     console.log('2. THIS IS THE USERNAME: ', socket.username);
+    console.log('2. THIS IS THE OTHER USERS socketId: ', data.id);
 
-    io.emit('Private', "Message is going from server to client");
-    // io.to(id).emit('Private', {
-    //   name: socket.username,
-    //   message: data
-    // });
+    // io.emit('Private', "Message is going from server to client " + data.msg);
+    io.to(id).emit('Private', {
+      name: socket.username,
+      message: data.msg
+    });
   });
 
 

@@ -120,8 +120,6 @@ function onlineUsersChat(response){
        console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
      }
 
-
-
     // sends message to the server to be saved
     // $.ajax({
     //   method: 'POST',
@@ -146,7 +144,7 @@ function addMessage(data) {
 
   socket.on('Private', function(data){
     console.log('THIS IS PRIVATE MESSAGE: ', data);
-    // $('#messages').append($('<li>').text(data));
+    $('#messages').append($('<li>').text(data.message));
   });
 
 
