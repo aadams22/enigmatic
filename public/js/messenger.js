@@ -144,7 +144,7 @@ function addMessage(data) {
 
   socket.on('Private', function(data){
     console.log('THIS IS PRIVATE MESSAGE: ', data);
-    $('#messages').append($('<li>').text(data.message));
+    $('#messages').append('<li>' + data.name + ': ' + data.message + '</li>');
   });
 
 
