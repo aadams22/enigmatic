@@ -1,11 +1,11 @@
 var express          = require('express'),
     mongoose         = require('mongoose'),
-    morgan           = require('morgan'),
     passport         = require('passport'),
     Strategy         = require('passport-facebook').Strategy,
     port             = process.env.PORT || 8080;
     User             = require('./models/user.js'),
     Convo            = require('./models/convo.js'),
+    Message          = require('./models/message.js'),
     app              = express();
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
@@ -14,7 +14,8 @@ mongoose.connect(mongoUri);
 
 //==================================
 app.use(express.static('public'));
-app.use(morgan('dev'));
+app.use(require('morgan')('dev'));
+app.use(require('method-override')('_method'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin grey', resave: true, saveUninitialized: true}));
@@ -203,7 +204,7 @@ io.on('connection', function(socket) {
 
     //creates a unique convo id of the two user's combined unique ids so that it can't be
     //duplicated and can be accessed by both users
-    newConvo.id = parseInt(req.user.id + req.body.id);
+    newConvo._id = parseInt(req.user.id + req.body.id);
 
     //saving the participants of the conversation to the convo so that their
     //names can be added to the chat
@@ -215,18 +216,28 @@ io.on('connection', function(socket) {
       newConvo.socketId = req.body.socketId;
     }
 
+    newConvo.save(function(err, data){
+      console.log('saving error: ', err);
+    });
 
-    //  newConvo.save(function(err){
-    //    console.log('saving error: ', err);
-    //    res.redirect('/messanger')
-    //  });
+
+    User.findByIdAndUpdate(req.user.id, {$push: { "convos": { newConvo } }}, { new: true }, function(err, data){
+      console.log('THESE ARE USERS CONVOS: ', data.convos);
+     data.convos.push(newConvo);
+    });
+
+    User.findByIdAndUpdate(req.body.id, {$push: { "convos": { newConvo } }}, { new: true }, function(err, data){
+      console.log('THESE ARE OTHER USERS CONVOS: ', data.convos);
+      data.convos.push(newConvo);
+    });
+
 
  });
 
 
  app.post('/saveMessage', function(req, res){
    console.log("============== saveMessage accessed ==============");
-
+   console.log(req.body);
     // var newMessage = Message();
  });
 
