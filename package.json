@@ -17,6 +17,7 @@
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
+    "jquery.cookie": "^1.4.1",
     "js-cookie": "^2.1.0",
     "method-override": "^2.3.5",
     "mongoose": "^4.4.10",

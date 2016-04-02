@@ -38,7 +38,7 @@ function onlineUsersChat(response){
         var onlineUserSocketId = '/' + $(this).prop('id').split('/')[1];
         console.log('ONLINE USER SOCKET ID: ', onlineUserSocketId);
         var onlineUserName = $(this).text();
-        console.log();
+         window.location.hash = onlineUserSocketId;
 
         $.ajax({
           method: 'GET',
@@ -109,29 +109,39 @@ function onlineUsersChat(response){
 
 
 //THIS SHOULD BE AN EDIT FORM BECAUSE YOU'RE EDITING AN EXISTING CONVO
-  $('form').submit(function(){
+  $('form').submit(function(e){
+    e.preventDefault();
     console.log('form submitting huzzah');
-    // console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
-    var newMsg = $('#m').val('');
-    // sends message to the server to be saved
-    $.ajax({
-      method: 'POST',
-      url: '/saveMessage',
-      data: { 'message': newMsg }
-    });
-    console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
-    //emits on socket the message to the specifically clicked user
-    // socket.emit('new-message', {
-    //   socketId: onlineUserSocketId,
-    //   msg: newMsg
-    // });
+    var newMsg = $('#input-message').val();
+    console.log(newMsg);
 
-    // $('#m').val('');
-    // return false;
+    if(window.location.hash) {
+      var onlineUserSocketId = window.location.hash.substr(1);
+       console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
+     }
+
+
+
+    // sends message to the server to be saved
+    // $.ajax({
+    //   method: 'POST',
+    //   url: '/saveMessage',
+    //   data: { 'message': newMsg }
+    // });
+    // console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
+
+    // emits on socket the message to the specifically clicked user
+    socket.emit('new-message', {
+      socketId: onlineUserSocketId,
+      msg: newMsg
+    });
+
+    $('#input-message').val('');
+    return false;
   });
 
 function addMessage(data) {
-
+  console.log('will add new messages');
 }
 
   socket.on('Private', function(data){

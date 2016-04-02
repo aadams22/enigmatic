@@ -15,7 +15,6 @@ mongoose.connect(mongoUri);
 //==================================
 app.use(express.static('public'));
 app.use(require('morgan')('dev'));
-app.use(require('method-override')('_method'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin grey', resave: true, saveUninitialized: true}));
@@ -195,7 +194,7 @@ io.on('connection', function(socket) {
 
 
 
- // //GETFRIENDS ROUTE for finding your friends
+ //GETFRIENDS ROUTE for finding your friends
  app.post('/createNewConvo', function(req, res){
    console.log("============== createorfind accessed ==============");
    console.log('name: ', req.body.name);
