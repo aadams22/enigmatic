@@ -2,11 +2,42 @@ var express          = require('express'),
     mongoose         = require('mongoose'),
     passport         = require('passport'),
     Strategy         = require('passport-facebook').Strategy,
+    app              = express(),
     port             = process.env.PORT || 8080;
-    User             = require('./models/user.js'),
+
+//Require Models
+var User             = require('./models/user.js'),
     Convo            = require('./models/convo.js'),
-    Message          = require('./models/message.js'),
-    app              = express();
+    Message          = require('./models/message.js');
+
+//==================================
+//Requiring Encryption
+
+var crypto    = require('crypto');
+
+function encrypt(key, data) {
+  var cipher = crypto.createCipher('aes256', key);
+  var crypted = cipher.update(data, 'utf-8', 'hex');
+  crypted += cipher.final('hex');
+
+  return crypted;
+}
+
+
+function decrypt(key, data) {
+  var decipher = crypto.createDecipher ('aes256', key);
+  var decrypted = decipher.update(data, 'hex', 'utf-8');
+  decrypted += decipher.final('utf-8');
+
+  return decrypted;
+}
+
+var key = new Buffer ('Q93HDHKID6EN14OF595032JN63446295')
+
+decrypt(key, encrypt(key, 'hello world'));
+
+
+//==================================
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
 mongoose.connect(mongoUri);
@@ -110,9 +141,6 @@ io.on('connection', function(socket) {
 
   });
 
-  // function addNickname() {
-  //   io.sockets.emit('userNames', Object.keys(clients));
-  // };
 
   console.log('Socket connected: ', socket.id);
   clients.push(socket.id);
@@ -128,13 +156,23 @@ io.on('connection', function(socket) {
     console.log('1. THIS IS THE MESSAGE: ', data.msg);
     console.log('2. THIS IS THE USERNAME: ', socket.username);
     console.log('2. THIS IS THE OTHER USERS socketId: ', data.id);
+    console.log('4. THIS IS THE CONVOID: ', data.convoId)
+
+    //encrypts message with AES256
+    var encryptedMsg = encrypt(key, data.msg);
+    console.log('ENCRYPTED HASH: ', encryptedMsg);
 
     // io.emit('Private', "Message is going from server to client " + data.msg);
     io.to(id).emit('Private', {
       name: socket.username,
-      message: data.msg
+      message: encryptedMsg,
+      convoId: data.convoId
     });
-  });
+  }); //<--new-message
+
+
+
+
 
 
   socket.on('disconnect', function() {
@@ -227,7 +265,7 @@ io.on('connection', function(socket) {
     });
 
     User.findByIdAndUpdate(req.body.id, {$push: { "convos": { newConvo } }}, { new: true }, function(err, data){
-      console.log('THESE ARE OTHER USERS CONVOS: ', data.convos);
+      // console.log('THESE ARE OTHER USERS CONVOS: ', data.convos);
       data.convos.push(newConvo);
     });
 
@@ -237,8 +275,36 @@ io.on('connection', function(socket) {
 
  app.post('/saveMessage', function(req, res){
    console.log("============== saveMessage accessed ==============");
-   console.log(req.body);
-    // var newMessage = Message();
+   console.log('1. ', req.body.message);
+   console.log('2. ', req.body.previousUsersConvo);
+   console.log('3. ', req.body.username);
+    var aMessage = Message();
+
+    aMessage.message = req.body.message;
+    aMessage.sender = req.body.username;
+
+    aMessage.save(function(err, data){
+      console.log('!!saving err!! ', err);
+    });
+
+
+    Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages": { aMessage } }}, { new: true }, function(err, data){
+      console.log('THIS IS THE FOUND CONVO MESSAGES : ', data.messages);
+      data.messages.push(aMessage);
+    });
+
+    //adds to you the online user
+    User.findById(req.user.id, function(err, data){
+      Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages": { aMessage } }}, { new: true }, function(err, data){
+        console.log('THIS IS THE USER FOUND CONVO MESSAGES : ', data.messages);
+        data.messages.push(aMessage);
+      });
+    });
+
+
+
+
+
  });
 
  //LOGOUT

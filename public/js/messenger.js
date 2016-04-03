@@ -48,7 +48,6 @@ function onlineUsersChat(response){
           url: '/json'
         }).done(
           function(response) {
-            console.log(response.convos)
             //checks for convos
             if (response.convos.length == 0) {
               console.log('NO CONVOS!');
@@ -85,6 +84,9 @@ function onlineUsersChat(response){
           for (var i = 0; i < convo.length; i++) {
             if (convo[i].newConvo._id == parseInt(myId) + parseInt(onlineUserId) || parseInt(myId) + parseInt(onlineUserId)) {
               console.log('matchy matchy!');
+              //adds the users' old chat conversation id to the chat-container
+              $('.chat-container').attr('id', '');
+              $('.chat-container').attr('id', convo[i].newConvo._id);
               //sends the result to addOldMessegesToChat to append the messages to the chatbox
               convo[i].newConvo.messages.length != 0 ? addOldMessegesToChat(convo[i].newConvo) : false;
               return
@@ -111,43 +113,56 @@ function onlineUsersChat(response){
 }; //<--addName
 
 
-//THIS SHOULD BE AN EDIT FORM BECAUSE YOU'RE EDITING AN EXISTING CONVO
+//uses form input to send messages to specific users
   $('form').submit(function(e){
     e.preventDefault();
-    console.log('form submitting huzzah');
     var newMsg = $('#input-message').val();
     console.log(newMsg);
 
     if(window.location.hash) {
       var onlineUserSocketId = window.location.hash.substr(1);
-       console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
+      //  console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
      }
 
-    //sends message to the server to be saved
-    $.ajax({
-      method: 'POST',
-      url: '/saveMessage',
-      data: { 'message': newMsg }
-    });
+     //gets convoId for use in saving messages to database
+     var previousUsersConvo = $(this).closest('div').attr('id');
 
     // emits on socket the message to the specifically clicked user
     socket.emit('new-message', {
       socketId: onlineUserSocketId,
-      msg: newMsg
+      msg: newMsg,
+      convoId: previousUsersConvo
     });
 
     $('#input-message').val('');
     return false;
   });
 
-function addMessage(data) {
-  console.log('will add new messages');
-}
 
-  socket.on('Private', function(data){
-    console.log('THIS IS PRIVATE MESSAGE: ', data);
-    $('#messages').append('<li>' + data.name + ': ' + data.message + '</li>');
-  });
+//adds message to chat-box and sends message to database to be saved
+function addMessage(data) {
+  console.log("THIS IS addMessage DATA: ", data);
+  //adds message to chat-box
+  $('#messages').append('<li>' + data.name + ': ' + data.message + '</li>');
+
+
+   //sends message to the server to be saved
+   $.ajax({
+     method: 'POST',
+     url: '/saveMessage',
+     data: {
+           'message': data.message,
+           'previousUsersConvo': data.convoId,
+           'username': data.name
+            }
+   });
+
+}; //<--addMessage
+
+//listens for message from the private user
+socket.on('Private', function(data){
+  addMessage(data);
+});
 
 
 
