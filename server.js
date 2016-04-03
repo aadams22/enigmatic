@@ -160,7 +160,6 @@ io.on('connection', function(socket) {
 
     //encrypts message with AES256
     var encryptedMsg = encrypt(key, data.msg);
-    console.log('ENCRYPTED HASH: ', encryptedMsg);
 
     // io.emit('Private', "Message is going from server to client " + data.msg);
     io.to(id).emit('Private', {
@@ -171,6 +170,13 @@ io.on('connection', function(socket) {
   }); //<--new-message
 
 
+
+  socket.on('decrypt-msg', function(data){
+    console.log('DECRYPT MSG: ', data);
+    var id = data.onlineUserSocketId;
+    var decryptedMsg = decrypt(key, data.msg);
+    io.to(id).emit('decrypt-private', { 'msg': decryptedMsg });
+  });
 
 
 
@@ -289,14 +295,13 @@ io.on('connection', function(socket) {
 
 
     Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages": { aMessage } }}, { new: true }, function(err, data){
-      console.log('THIS IS THE FOUND CONVO MESSAGES : ', data.messages);
       data.messages.push(aMessage);
     });
 
     //adds to you the online user
     User.findById(req.user.id, function(err, data){
       Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages": { aMessage } }}, { new: true }, function(err, data){
-        console.log('THIS IS THE USER FOUND CONVO MESSAGES : ', data.messages);
+        // console.log('THIS IS THE USER FOUND CONVO MESSAGES : ', data.messages);
         data.messages.push(aMessage);
       });
     });

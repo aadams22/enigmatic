@@ -121,7 +121,6 @@ function onlineUsersChat(response){
 
     if(window.location.hash) {
       var onlineUserSocketId = window.location.hash.substr(1);
-      //  console.log("THIS IS THE SUBMITTING onlineUserSocketId: ", onlineUserSocketId);
      }
 
      //gets convoId for use in saving messages to database
@@ -157,7 +156,23 @@ function addMessage(data) {
             }
    });
 
+
+
+   var encryptedText = null;
+   $('#messages > li').hover(
+     function() {
+         console.log('DECRYPT ACCESSED', $(this).html());
+         encryptedText = $(this).html();
+         $(this).html('');
+       },
+       function(e) {
+         $(this).html(encryptedText);
+       });
+
+
+
 }; //<--addMessage
+
 
 //listens for message from the private user
 socket.on('Private', function(data){
@@ -170,6 +185,20 @@ socket.on('Private', function(data){
 
 
 
+
+//decrypts message on hover. function is attached to #messages > li
+$('#messages > li').hover(function(e){
+    console.log('DECRYPT ACCESSED', $(this).html());
+    $(this).html('');
+
+    // if(window.location.hash) {
+    //   var onlineUserSocketId = window.location.hash.substr(1);
+    //  }
+    // socket.emit('decrypt-msg', { 'socketId': onlineUserSocketId, 'msg': $(this).text('') });
+    // $(this).html('')
+
+
+});
 
 
 
