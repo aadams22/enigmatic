@@ -27,7 +27,7 @@ function encrypt(key, data) {
 function decrypt(key, data) {
   var decipher = crypto.createDecipher ('aes256', key);
   var decrypted = decipher.update(data, 'hex', 'utf-8');
-  decrypted += decipher.final('utf-8');
+  decrypted += decipher.final('hex');
 
   return decrypted;
 }
@@ -172,9 +172,11 @@ io.on('connection', function(socket) {
 
 
   socket.on('decrypt-msg', function(data){
-    console.log('DECRYPT MSG: ', data);
     var id = data.onlineUserSocketId;
-    var decryptedMsg = decrypt(key, data.msg);
+    var msg = data.msg.split(' ')[1].trim();
+    var decryptedMsg = decrypt(key, msg);
+    console.log('DECRYPT MSG: ', decryptedMsg);
+
     io.to(id).emit('decrypt-private', { 'msg': decryptedMsg });
   });
 

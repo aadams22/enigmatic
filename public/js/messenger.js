@@ -164,6 +164,18 @@ function addMessage(data) {
          console.log('DECRYPT ACCESSED', $(this).html());
          encryptedText = $(this).html();
          $(this).html('');
+
+         if(window.location.hash) {
+           var onlineUserSocketId = window.location.hash.substr(1);
+          }
+
+         socket.emit('decrypt-msg', { 'socketId': onlineUserSocketId, 'msg': encryptedText });
+
+         socket.on('decrypt-private', function(data){
+           console.log('decrypt-private: ', data);
+         });
+
+
        },
        function(e) {
          $(this).html(encryptedText);
@@ -177,27 +189,6 @@ function addMessage(data) {
 //listens for message from the private user
 socket.on('Private', function(data){
   addMessage(data);
-});
-
-
-
-
-
-
-
-
-//decrypts message on hover. function is attached to #messages > li
-$('#messages > li').hover(function(e){
-    console.log('DECRYPT ACCESSED', $(this).html());
-    $(this).html('');
-
-    // if(window.location.hash) {
-    //   var onlineUserSocketId = window.location.hash.substr(1);
-    //  }
-    // socket.emit('decrypt-msg', { 'socketId': onlineUserSocketId, 'msg': $(this).text('') });
-    // $(this).html('')
-
-
 });
 
 
