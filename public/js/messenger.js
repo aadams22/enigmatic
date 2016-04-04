@@ -57,7 +57,7 @@ function onlineUsersChat(response){
             }
           },
           function(err) {
-            console.log(err);
+            // console.log(err);
           }
         );
 
@@ -140,7 +140,7 @@ function onlineUsersChat(response){
 
 //adds message to chat-box and sends message to database to be saved
 function addMessage(data) {
-  console.log("THIS IS addMessage DATA: ", data);
+  // console.log("THIS IS addMessage DATA: ", data);
   //adds message to chat-box
   $('#messages').append('<li>' + data.name + ': ' + data.message + '</li>');
 
@@ -160,7 +160,9 @@ function addMessage(data) {
 
    var encryptedText = null;
    $('#messages > li').hover(
+
      function() {
+        var $this = $(this);
          console.log('DECRYPT ACCESSED', $(this).html());
          encryptedText = $(this).html();
          $(this).html('');
@@ -169,10 +171,13 @@ function addMessage(data) {
            var onlineUserSocketId = window.location.hash.substr(1);
           }
 
-         socket.emit('decrypt-msg', { 'socketId': onlineUserSocketId, 'msg': encryptedText });
+        var username = encryptedText.split(':')[0].trim();
+         socket.emit('Decrypt-Msg', { 'socketId': onlineUserSocketId, 'msg': encryptedText });
 
-         socket.on('decrypt-private', function(data){
-           console.log('decrypt-private: ', data);
+         socket.on('Decrypt-Private', function(data){
+           console.log('decrypt-private: ', data.decryptedMsg);
+           $this.html(username + ': ' + data.decryptedMsg);
+
          });
 
 
@@ -184,6 +189,11 @@ function addMessage(data) {
 
 
 }; //<--addMessage
+
+
+// socket.on('Decrypt-Private', function(data){
+//  console.log('decrypt-private: ', data);
+// });
 
 
 //listens for message from the private user
@@ -207,7 +217,7 @@ if(true) {
     },
     //error
     function(err){
-      console.log(err);
+      // console.log(err);
     });
 
 

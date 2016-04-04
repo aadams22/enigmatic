@@ -25,16 +25,16 @@ function encrypt(key, data) {
 
 
 function decrypt(key, data) {
-  var decipher = crypto.createDecipher ('aes256', key);
+  var decipher = crypto.createDecipher('aes256', key);
   var decrypted = decipher.update(data, 'hex', 'utf-8');
-  decrypted += decipher.final('hex');
+  decrypted += decipher.final('utf-8');
 
   return decrypted;
 }
 
-var key = new Buffer ('Q93HDHKID6EN14OF595032JN63446295')
+var key = new Buffer('Q93HDHKID6EN14OF595032JN63446295');
 
-decrypt(key, encrypt(key, 'hello world'));
+// decrypt(key, encrypt(key, 'hello world'));
 
 
 //==================================
@@ -171,13 +171,14 @@ io.on('connection', function(socket) {
 
 
 
-  socket.on('decrypt-msg', function(data){
-    var id = data.onlineUserSocketId;
-    var msg = data.msg.split(' ')[1].trim();
+  socket.on('Decrypt-Msg', function(data){
+    var id = data.socketId;
+    var msg = data.msg.split(': ')[1].trim();
+    console.log("MESSAGE TO BE DECRYPTED", msg);
     var decryptedMsg = decrypt(key, msg);
     console.log('DECRYPT MSG: ', decryptedMsg);
 
-    io.to(id).emit('decrypt-private', { 'msg': decryptedMsg });
+    io.to(id).emit('Decrypt-Private', { 'decryptedMsg': decryptedMsg });
   });
 
 
