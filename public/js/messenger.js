@@ -165,11 +165,9 @@ function addMessage(data) {
         //setting this li to a variable to be used in 'Decrypt-Private'
         var $this = $(this);
          //saving the encrypted message to a variable so that we don't have to send it back from the server
-         encryptedText = $(this).html();
+         encryptedText = $this.html();
          //gets username from current appeneded message
          var username = encryptedText.split(':')[0].trim();
-         //removes inner text of hovered item to be replaced later
-         $(this).html('');
 
          //gets the other user's socket id from window.location hash
          if(window.location.hash) {
@@ -182,6 +180,8 @@ function addMessage(data) {
          //listens for decrypted message from server
          socket.on('Decrypt-Private', function(data){
            console.log('decrypt-private: ', data.decryptedMsg);
+           //removes inner text of hovered item to be replaced later
+           $this.html('');
            //sets username ane decrypted message to the inner text
            $this.html(username + ': ' + data.decryptedMsg);
            //clears data variable on front end
@@ -191,7 +191,7 @@ function addMessage(data) {
 
        },
        function(e) {
-         //on off hover replaces the decrypted message with previous encrypted message
+         //off hover replaces the decrypted message with previous encrypted message
          $(this).html(encryptedText);
        });
 

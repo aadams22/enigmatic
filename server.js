@@ -10,13 +10,32 @@ var User             = require('./models/user.js'),
     Convo            = require('./models/convo.js'),
     Message          = require('./models/message.js');
 
+
+//==================================
+
+var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
+mongoose.connect(mongoUri);
+
+
+//==================================
+app.use(express.static('public'));
+app.use(require('morgan')('dev'));
+app.use(require('cookie-parser')());
+
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin grey', resave: true, saveUninitialized: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
 //==================================
 //Requiring Encryption
 
 var crypto    = require('crypto');
 
 function encrypt(key, data) {
-  var cipher = crypto.createCipher('aes256', key);
+  var cipher  = crypto.createCipher('aes256', key);
   var crypted = cipher.update(data, 'utf-8', 'hex');
   crypted += cipher.final('hex');
 
@@ -25,7 +44,7 @@ function encrypt(key, data) {
 
 
 function decrypt(key, data) {
-  var decipher = crypto.createDecipher('aes256', key);
+  var decipher  = crypto.createDecipher('aes256', key);
   var decrypted = decipher.update(data, 'hex', 'utf-8');
   decrypted += decipher.final('utf-8');
 
@@ -38,23 +57,6 @@ var key = new Buffer('Q93HDHKID6EN14OF595032JN63446295');
 
 
 //==================================
-
-var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/enigmatic';
-mongoose.connect(mongoUri);
-
-
-//==================================
-app.use(express.static('public'));
-app.use(require('morgan')('dev'));
-app.use(require('cookie-parser')());
-app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'sunny yesterday my life was feelin grey', resave: true, saveUninitialized: true}));
-app.use(passport.initialize());
-app.use(passport.session());
-
-//==================================
-
-
 
 // require('./config/routes.js')(app,mongoose,passport,User)
 // require('./config/passport.js')(app,passport,Strategy)
@@ -161,7 +163,6 @@ io.on('connection', function(socket) {
     //encrypts message with AES256
     var encryptedMsg = encrypt(key, data.msg);
 
-    // io.emit('Private', "Message is going from server to client " + data.msg);
     io.to(id).emit('Private', {
       name: socket.username,
       message: encryptedMsg,
@@ -172,13 +173,14 @@ io.on('connection', function(socket) {
 
 
   socket.on('Decrypt-Msg', function(data){
-    var id = data.socketId;
+    var id  = data.socketId;
     var msg = data.msg.split(': ')[1].trim();
     console.log("MESSAGE TO BE DECRYPTED", msg);
     var decryptedMsg = decrypt(key, msg);
     console.log('DECRYPT MSG: ', decryptedMsg);
 
     io.to(id).emit('Decrypt-Private', { 'decryptedMsg': decryptedMsg });
+    data = null;
   });
 
 
@@ -201,11 +203,14 @@ io.on('connection', function(socket) {
 //PASSPORT SERIALIZATIONS
 
    passport.serializeUser(function(user, done) {
+     console.log('PASSPORT SERIALIZEUSER: ', user.id);
       done(null, user.id);
    });
 
    passport.deserializeUser(function(id, done) {
+      console.log('PASSPORT DE-SERIALIZEUSER: ', id);
       User.findById(id, function(err, user) {
+        console.log('PASSPORT DE-SERIALIZEUER user ', user);
           done(err, user);
       });
    });
@@ -268,12 +273,12 @@ io.on('connection', function(socket) {
     });
 
 
-    User.findByIdAndUpdate(req.user.id, {$push: { "convos": { newConvo } }}, { new: true }, function(err, data){
+    User.findByIdAndUpdate(req.user.id, {$push: { "convos" : { newConvo } }}, { new: true }, function(err, data){
       console.log('THESE ARE USERS CONVOS: ', data.convos);
      data.convos.push(newConvo);
     });
 
-    User.findByIdAndUpdate(req.body.id, {$push: { "convos": { newConvo } }}, { new: true }, function(err, data){
+    User.findByIdAndUpdate(req.body.id, {$push: { "convos" : { newConvo } }}, { new: true }, function(err, data){
       // console.log('THESE ARE OTHER USERS CONVOS: ', data.convos);
       data.convos.push(newConvo);
     });
@@ -287,29 +292,51 @@ io.on('connection', function(socket) {
    console.log('1. ', req.body.message);
    console.log('2. ', req.body.previousUsersConvo);
    console.log('3. ', req.body.username);
-    var aMessage = Message();
+   console.log('4. ', req.session.passport.user);
+    var aMessage = new Message();
 
     aMessage.message = req.body.message;
     aMessage.sender = req.body.username;
 
     aMessage.save(function(err, data){
-      console.log('!!saving err!! ', err);
+      if (err) {
+        console.log('!!saving err!! ', err);
+      } else {
+        console.log('Saved data! ', data);
+      }
+
     });
 
 
-    Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages": { aMessage } }}, { new: true }, function(err, data){
+    Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages" : { aMessage } }}, { new: true }, function(err, data){
+      // console.log("THIS IS THE NEW CONVERSATION DATA", data);
       data.messages.push(aMessage);
     });
 
+
     //adds to you the online user
-    User.findById(req.user.id, function(err, data){
-      Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages": { aMessage } }}, { new: true }, function(err, data){
-        // console.log('THIS IS THE USER FOUND CONVO MESSAGES : ', data.messages);
-        data.messages.push(aMessage);
-      });
+    User.findById(req.session.passport.user, function(err, data){
+      // var convoId = req.body.previousUsersConvo
+      console.log('user found newConvo', data.convos);
+
+      for (var i = 0; i < data.convos.length; i++) {
+        console.log("working for loop");
+        if (data.convos[i].newConvo._id == req.body.previousUsersConvo) {
+          data.convos[i].newConvo.messages.push(aMessage);
+          console.log('user convo id matches found', data.convos[i].newConvo.messages);
+
+          data.save(function(err, data){
+            if (err) {
+              console.log('!!saving err!! ', err);
+            } else {
+              return console.log('Saved user message! ', data);
+            }
+          });
+
+        }
+      }
+
     });
-
-
 
 
 
@@ -338,6 +365,7 @@ io.on('connection', function(socket) {
  function isLoggedIn(req, res, next) {
      if (req.isAuthenticated())
          return next();
+         console.log('========!!!!!is authenticated!!!!!========')
      res.redirect('/');
  }
 

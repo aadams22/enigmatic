@@ -9,7 +9,7 @@ var userSchema = new Schema({
                   email: { type: String, unique: true },
                   displayName: { type: String }
                   },
-    convos: [convoSchema],
+    convos: [],
     totalFriends: { type: Number },
     providerData: {
                   accessToken:  { type: String } ,
