@@ -238,6 +238,7 @@ io.on('connection', function(socket) {
    res.render('friends.ejs', { user: req.user });
  });
 
+//USER INFO JSON ROUTE
  app.get('/json', function(req, res){
    console.log(req.user.id);
    User.findById(req.user.id, function(err, data){
@@ -245,6 +246,25 @@ io.on('connection', function(socket) {
    });
  });
 
+//CONVO INFO JSON ROUTE
+app.get('/json/convos', function(req, res){
+  Convo.find({}, function(err, data){
+    res.send(data);
+    console.log(data);
+  });
+});
+
+// app.post('/decryptTheMsg', function(req,res){
+//   console.log('=====decryptTheMsg ', req.body);
+//   var id  = req.body.socketId;
+//   var msg = req.body.encryptedText.split(': ')[1].trim();
+//   console.log("MESSAGE TO BE DECRYPTED", msg);
+//   var decryptedMsg = decrypt(key, msg);
+//   console.log('DECRYPT MSG: ', decryptedMsg);
+//
+//   io.to(id).emit('Decrypt-Private', { 'decryptedMsg' : decryptedMsg });
+//
+// });
 
 
  //GETFRIENDS ROUTE for finding your friends
@@ -305,8 +325,28 @@ io.on('connection', function(socket) {
         console.log('Saved data! ', data);
       }
 
-    });
+      //adds to you the online user
+      User.findById(req.session.passport.user, function(err, user){
 
+        for (var i = 0; i < user.convos.length; i++) {
+          if (user.convos[i].newConvo._id == req.body.previousUsersConvo) {
+            user.convos[i].newConvo.messages.push(aMessage);
+          }
+        }
+
+        console.log('user convo id matches found', user.convos);
+
+        user.save(function(err, user){
+          if (err) {
+            console.log('!!saving err!! ', err);
+          } else {
+            console.log('Saved user message! ', user.convos);
+          }
+        });
+
+      });
+
+  }); //<---saving message
 
     Convo.findByIdAndUpdate(req.body.previousUsersConvo, {$push: { "messages" : { aMessage } }}, { new: true }, function(err, data){
       // console.log("THIS IS THE NEW CONVERSATION DATA", data);
@@ -314,29 +354,7 @@ io.on('connection', function(socket) {
     });
 
 
-    //adds to you the online user
-    User.findById(req.session.passport.user, function(err, data){
-      // var convoId = req.body.previousUsersConvo
-      console.log('user found newConvo', data.convos);
 
-      for (var i = 0; i < data.convos.length; i++) {
-        console.log("working for loop");
-        if (data.convos[i].newConvo._id == req.body.previousUsersConvo) {
-          data.convos[i].newConvo.messages.push(aMessage);
-          console.log('user convo id matches found', data.convos[i].newConvo.messages);
-
-          data.save(function(err, data){
-            if (err) {
-              console.log('!!saving err!! ', err);
-            } else {
-              return console.log('Saved user message! ', data);
-            }
-          });
-
-        }
-      }
-
-    });
 
 
 
@@ -365,7 +383,7 @@ io.on('connection', function(socket) {
  function isLoggedIn(req, res, next) {
      if (req.isAuthenticated())
          return next();
-         console.log('========!!!!!is authenticated!!!!!========')
+        //  console.log('========!!!!!is authenticated!!!!!========')
      res.redirect('/');
  }
 

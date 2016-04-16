@@ -48,11 +48,13 @@ function onlineUsersChat(response){
           url: '/json'
         }).done(
           function(response) {
+            console.log('THIS IS RESPONSE ',response);
             //checks for convos
             if (response.convos.length == 0) {
               console.log('NO CONVOS!');
               addNewConvo(onlineUserSocketId, onlineUserId, onlineUserName);
             }else {
+              console.log(response);
               matchOldConvoToIds(response.convos, response._id, onlineUserId);
             }
           },
@@ -97,9 +99,9 @@ function onlineUsersChat(response){
 
         //this should append old chats to chat box
         function addOldMessegesToChat(matchedConvo) {
-          console.log("THESE ARE HTE MESSAGES: ", matchedConvo.messages);
+          console.log("THESE ARE THE MESSAGES: ", matchedConvo);
           for (var i = 0; i < matchedConvo.messages.length; i++) {
-            $('#messages').append('<li>'+ usersConvo[i].message + '</li>');
+            // $('#messages').append('<li>'+ usersConvo[i].message + '</li>');
           }
         }; //<--addOldMessegesToChat
 
@@ -140,7 +142,7 @@ function onlineUsersChat(response){
 
 //adds message to chat-box and sends message to database to be saved
 function addMessage(data) {
-  // console.log("THIS IS addMessage DATA: ", data);
+  console.log("THIS IS addMessage DATA: ", data);
   //adds message to chat-box
   $('#messages').append('<li>' + data.name + ': ' + data.message + '</li>');
 
@@ -158,10 +160,11 @@ function addMessage(data) {
 
 
    //decrypts messages on hover and applies encrypted version on off hover
-   var encryptedText = null;
+   var decryptedMessage = null;
+   var encryptedText    = null;
    $('#messages > li').hover(
 
-     function() {
+     function(e) {
         //setting this li to a variable to be used in 'Decrypt-Private'
         var $this = $(this);
          //saving the encrypted message to a variable so that we don't have to send it back from the server
@@ -174,26 +177,44 @@ function addMessage(data) {
            var onlineUserSocketId = window.location.hash.substr(1);
           }
 
-         //emits the other user's socket id and the encrypted text to th eserver to be decrypted
-         socket.emit('Decrypt-Msg', { 'socketId': onlineUserSocketId, 'msg': encryptedText });
+        // $.ajax({
+        //   method: 'POST',
+        //   url: '/decryptTheMsg',
+        //   data: { 'encryptedText' : encryptedText, 'socketId' : onlineUserSocketId }
+        // }).done(function(){
+        //   //listens for decrypted message from server
+        //   socket.on('Decrypt-Private', function(data){
+        //     console.log('decrypt-private: ', data.decryptedMsg);
+        //     decryptedMessage  = data.decryptedMsg;
+        //     //sets username ane decrypted message to the inner text
+        //     $this.html(username + ': ' + decryptedMessage);
+        //     console.log($(this));
+        //     //clears data variable on front end
+        //    //  data = null;
+        //  });
+        // })
+
+        //emits the other user's socket id and the encrypted text to th eserver to be decrypted
+        socket.emit('Decrypt-Msg', { 'socketId': onlineUserSocketId, 'msg': encryptedText });
 
          //listens for decrypted message from server
          socket.on('Decrypt-Private', function(data){
            console.log('decrypt-private: ', data.decryptedMsg);
-           //removes inner text of hovered item to be replaced later
-           $this.html('');
+           decryptedMessage  = data.decryptedMsg;
            //sets username ane decrypted message to the inner text
-           $this.html(username + ': ' + data.decryptedMsg);
+           $this.html(username + ': ' + decryptedMessage);
+           console.log($(this));
            //clears data variable on front end
-           data = null;
-         });
-
+          //  data = null;
+        });
 
        },
        function(e) {
          //off hover replaces the decrypted message with previous encrypted message
          $(this).html(encryptedText);
+         console.log('OFF HOVER ', encryptedText);
        });
+
 
 
 
@@ -213,7 +234,7 @@ if(true) {
     $.ajax({
       method: 'GET',
       url: '/json',
-      timeout: 1000
+      timeout: 5000
     }).done(
     //success
     function(response){
