@@ -23,4 +23,5 @@ Enigmatic is an encrypted private messaging web application that allows the user
 *Allow for chats with offline users*
 *Fix constant call for online users bug*
 
-##Author: Ashleigh Adams
+##Author:
+Ashleigh Adams
