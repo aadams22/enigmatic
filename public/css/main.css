@@ -29,8 +29,8 @@ header {
   width: 30%;
   overflow: hidden;
   transition-property: 100%;
-	transition-duration: 1s;
-	transition-timing-function: easeInOutQuart;
+  transition-duration: 1s;
+  transition-timing-function: easeInOutQuart;
 }
 
 header > h1{
@@ -41,9 +41,9 @@ header > h1{
 
 header:hover {
   background: darkgrey;
-	height: 100%;
-	width: 40%;
-	text-align: center;
+  height: 100%;
+  width: 40%;
+  text-align: center;
   -webkit-box-shadow: 24px 0px 68px -3px #666666;
   -moz-box-shadow: 24px 0px 68px -3px #666666;
   box-shadow: 24px 0px 68px -3px #666666;

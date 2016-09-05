@@ -353,11 +353,6 @@ app.get('/json/convos', function(req, res){
       data.messages.push(aMessage);
     });
 
-
-
-
-
-
  });
 
  //LOGOUT
@@ -386,10 +381,6 @@ app.get('/json/convos', function(req, res){
         //  console.log('========!!!!!is authenticated!!!!!========')
      res.redirect('/');
  }
-
-
-
-
 
 //==================================
 //LISTEN
